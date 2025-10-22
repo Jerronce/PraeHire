@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PraeHire Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">🎯</span>
+          <span class="logo-text">PraeHire</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-tab="resume">🧾 Resume Tailor</a>
+        <a class="nav-item" data-tab="apply">💼 Auto Apply</a>
+        <a class="nav-item" data-tab="interview">🎙 Interview Practice</a>
+      </nav>
+      <div class="sidebar-footer">
+        <button id="logoutBtn" class="btn-outline btn-full">Logout</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <header class="topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Dashboard</h1>
+        </div>
+        <div class="topbar-right">
+          <div id="userEmail" class="user-badge">User</div>
+        </div>
+      </header>
+
+      <section id="tab-resume" class="tab active">
+        <h2>Resume Tailor</h2>
+        <div class="card-grid">
+          <div class="card">
+            <h3>Your Resume</h3>
+            <textarea id="resumeInput" class="textarea" placeholder="Paste your resume text here or upload a file..."></textarea>
+            <div class="upload-row">
+              <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt">
+            </div>
+          </div>
+          <div class="card">
+            <h3>Job Description</h3>
+            <textarea id="jobDescInput" class="textarea" placeholder="Paste the job description here..."></textarea>
+            <button id="tailorResumeBtn" class="btn-primary">Tailor Resume with AI</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Optimized Resume</h3>
+          <textarea id="optimizedResume" class="textarea" placeholder="Your AI-optimized resume will appear here..."></textarea>
+          <div class="row">
+            <button id="saveOptimizedResume" class="btn-secondary">Save to Firestore</button>
+            <button id="copyOptimizedResume" class="btn-outline">Copy</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-apply" class="tab">
+        <h2>Auto Apply</h2>
+        <div class="card">
+          <label for="jobLinks">Paste job links (one per line)</label>
+          <textarea id="jobLinks" class="textarea" placeholder="https://jobs.example.com/role-1&#10;https://careers.example.com/role-2"></textarea>
+          <div class="row">
+            <button id="simulateApply" class="btn-primary">Simulate Auto Apply</button>
+            <button id="saveApplications" class="btn-secondary">Save Session</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Application Log</h3>
+          <div id="applyLog" class="log"></div>
+        </div>
+      </section>
+
+      <section id="tab-interview" class="tab">
+        <h2>Interview Practice</h2>
+        <div class="chat">
+          <div id="chatWindow" class="chat-window"></div>
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" placeholder="Ask an interview question...">
+            <button id="sendChat" class="btn-primary">Send</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import './js/firebase-config.js';
+    import './js/dashboard.js';
+  </script>
+</body>
+</html>
