@@ -1,5 +1,5 @@
 // Auth page interactions
-import { auth } from './js/firebase-config.js';
+import { auth } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
 const loginTab = document.getElementById('loginTab');
@@ -14,6 +14,7 @@ if (loginTab && signupTab) {
     loginForm.style.display = '';
     signupForm.style.display = 'none';
   });
+
   signupTab.addEventListener('click', () => {
     signupTab.classList.add('active');
     loginTab.classList.remove('active');
@@ -29,6 +30,7 @@ if (loginForm) {
     const password = document.getElementById('loginPassword').value;
     const errorEl = document.getElementById('loginError');
     errorEl.textContent = '';
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       window.location.href = 'dashboard.html';
@@ -46,10 +48,12 @@ if (signupForm) {
     const confirm = document.getElementById('signupConfirmPassword').value;
     const errorEl = document.getElementById('signupError');
     errorEl.textContent = '';
+
     if (password !== confirm) {
       errorEl.textContent = 'Passwords do not match';
       return;
     }
+
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       window.location.href = 'dashboard.html';
