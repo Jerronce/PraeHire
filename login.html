@@ -20,12 +20,10 @@
                 <h1>Welcome Back</h1>
                 <p>Sign in to continue your job search</p>
             </div>
-
             <div class="auth-tabs">
                 <button class="tab-btn active" id="loginTab">Login</button>
                 <button class="tab-btn" id="signupTab">Sign Up</button>
             </div>
-
             <!-- Login Form -->
             <form id="loginForm" class="auth-form">
                 <div class="form-group">
@@ -39,14 +37,13 @@
                 <div class="form-options">
                     <label class="checkbox-label">
                         <input type="checkbox" id="rememberMe">
-                        <span>Remember me</span>
+                        Remember me
                     </label>
                     <a href="#" class="forgot-link">Forgot password?</a>
                 </div>
                 <button type="submit" class="btn-primary btn-full">Sign In</button>
                 <div id="loginError" class="error-message"></div>
             </form>
-
             <!-- Signup Form -->
             <form id="signupForm" class="auth-form" style="display: none;">
                 <div class="form-group">
@@ -67,16 +64,14 @@
                 </div>
                 <label class="checkbox-label">
                     <input type="checkbox" id="agreeTerms" required>
-                    <span>I agree to the Terms of Service and Privacy Policy</span>
+                    I agree to the Terms of Service and Privacy Policy
                 </label>
                 <button type="submit" class="btn-primary btn-full">Create Account</button>
                 <div id="signupError" class="error-message"></div>
             </form>
-
             <div class="divider">
                 <span>or</span>
             </div>
-
             <button class="btn-google" id="googleSignIn">
                 <svg width="18" height="18" viewBox="0 0 18 18">
                     <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
@@ -86,13 +81,11 @@
                 </svg>
                 Continue with Google
             </button>
-
             <p class="auth-footer">
                 <a href="index.html">← Back to home</a>
             </p>
         </div>
     </div>
-
     <!-- Firebase SDKs -->
     <script type="module">
         // Firebase configuration will be loaded from firebase-config.js
@@ -108,6 +101,6 @@
             auth: auth
         };
     </script>
-    <script src="js/auth.js"></script>
+    <script type="module" src="js/auth.js"></script>
 </body>
 </html>
