@@ -1,16 +1,10 @@
 {
   "hosting": {
-    "public": "public",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
     ],
     "headers": [
       {
@@ -37,9 +31,6 @@
     },
     "hosting": {
       "port": 5000
-    },
-    "ui": {
-      "enabled": true
     }
   }
 }
