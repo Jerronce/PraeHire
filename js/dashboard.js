@@ -193,3 +193,26 @@ if (window.location.pathname.includes('resume.html')) {
         }
     })();
 }
+
+// PAYMENT PROTECTION - Check on page load
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        // Check subscription status
+        const hasSubscription = await checkSubscriptionStatus();
+        
+        if (!hasSubscription) {
+            // Block AI features for non-subscribers
+            blockAIFeatures();
+            
+            // Show warning banner
+            const banner = document.createElement('div');
+            banner.innerHTML = `
+                <div style="background: #ff6b6b; color: white; padding: 1rem; text-align: center; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;">
+                    <strong>Subscription Required:</strong> Subscribe for $100/month to use AI features. 
+                    <button onclick="initiatePayment()" style="background: white; color: #ff6b6b; border: none; padding: 0.5rem 1rem; border-radius: 5px; margin-left: 1rem; cursor: pointer; font-weight: bold;">Subscribe Now</button>
+                </div>
+            `;
+            document.body.prepend(banner.firstElementChild);
+        }
+    }
+});

@@ -149,3 +149,16 @@ if (typeof document !== 'undefined') {
     }
   });
 }
+
+// PAGE PROTECTION - Redirect non-subscribers
+auth.onAuthStateChanged(async (user) => {
+    if (user) {
+        const hasSubscription = await checkSubscriptionStatus();
+        if (!hasSubscription) {
+            alert('Subscription required to access this feature. Redirecting to dashboard...');
+            window.location.href = '/dashboard';
+        }
+    } else {
+        window.location.href = '/login.html';
+    }
+});
