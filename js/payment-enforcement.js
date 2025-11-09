@@ -1,35 +1,23 @@
-// PAYMENT ENFORCEMENT - LIVE MODE ONLY
-// Admin account gets free access forever
+// PAYMENT ENFORCEMENT - Clear messaging and Flutterwave integration
 const ADMIN_EMAIL = 'Jerronce101@gmail.com';
 const MONTHLY_PRICE = 100;
 
-// Check if user is admin
 function isAdmin(email) {
     return email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
 }
 
-// Check subscription status
 async function checkSubscriptionStatus() {
     const user = auth.currentUser;
-    if (!user) {
-        window.location.href = '/login.html?payment_required=true';
-        return false;
-    }
+    if (!user) return false;
     
-    // Admin bypass
-    if (isAdmin(user.email)) {
-        return true;
-    }
+    if (isAdmin(user.email)) return true;
     
     try {
         const userDoc = await db.collection('users').doc(user.uid).get();
         const userData = userDoc.data();
         
-        if (!userData || !userData.subscriptionActive) {
-            return false;
-        }
+        if (!userData || !userData.subscriptionActive) return false;
         
-        // Check if subscription expired
         const expiryDate = userData.subscriptionExpiry?.toDate();
         if (!expiryDate || expiryDate < new Date()) {
             await db.collection('users').doc(user.uid).update({
@@ -45,21 +33,15 @@ async function checkSubscriptionStatus() {
     }
 }
 
-// Block AI features
 function blockAIFeatures() {
-    // Disable all AI-related buttons
     const aiButtons = document.querySelectorAll(
         '.ai-feature-btn, button[onclick*="tailor"], button[onclick*="interview"], ' +
         'button[onclick*="cover"], #tailorBtn, #interviewBtn, #coverLetterBtn'
     );
     
     aiButtons.forEach(btn => {
-        btn.disabled = true;
-        btn.style.opacity = '0.5';
-        btn.style.cursor = 'not-allowed';
-        btn.title = 'Subscribe to use this feature';
-        
-        // Override click handlers
+        btn.style.opacity = '0.6';
+        btn.style.cursor = 'pointer';
         btn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -69,30 +51,52 @@ function blockAIFeatures() {
     });
 }
 
-// Show payment modal
 function showPaymentModal() {
+    // Remove existing modal if any
+    const existing = document.getElementById('praehire-payment-modal');
+    if (existing) existing.remove();
+    
     const modal = document.createElement('div');
+    modal.id = 'praehire-payment-modal';
     modal.innerHTML = `
-        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;">
-            <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; text-align: center;">
-                <h2 style="color: #667eea; margin-bottom: 1rem;">Subscription Required</h2>
-                <p style="margin-bottom: 1.5rem; color: #333;">Access all AI features for $${MONTHLY_PRICE}/month</p>
-                <button onclick="initiatePay ment()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1rem 2rem; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer; margin-right: 1rem;">Subscribe Now</button>
-                <button onclick="this.closest('div').parentElement.remove()" style="background: #ccc; color: #333; padding: 1rem 2rem; border: none; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">Cancel</button>
+        <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s;">
+            <div style="background: white; padding: 3rem; border-radius: 20px; max-width: 550px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+                <h2 style="color: #667eea; margin-bottom: 1rem; font-size: 2rem;">Subscribe to Continue</h2>
+                <p style="margin-bottom: 1rem; color: #666; font-size: 1.1rem; line-height: 1.6;">
+                    This AI feature requires an active subscription.
+                </p>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 15px; margin-bottom: 2rem;">
+                    <div style="font-size: 2.5rem; font-weight: bold; margin-bottom: 0.5rem;">$${MONTHLY_PRICE}<span style="font-size: 1.2rem; font-weight: normal;">/month</span></div>
+                    <div style="font-size: 1rem; opacity: 0.95;">✔️ AI Resume Tailoring</div>
+                    <div style="font-size: 1rem; opacity: 0.95;">✔️ Interview Practice</div>
+                    <div style="font-size: 1rem; opacity: 0.95;">✔️ Cover Letter Generation</div>
+                    <div style="font-size: 1rem; opacity: 0.95;">✔️ Unlimited AI Access</div>
+                </div>
+                <button onclick="initiatePayment()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.2rem 3rem; border: none; border-radius: 10px; font-size: 1.2rem; font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    💳 Pay $${MONTHLY_PRICE} & Subscribe Now
+                </button>
+                <button onclick="document.getElementById('praehire-payment-modal').remove()" style="background: transparent; color: #999; border: none; padding: 0.8rem; font-size: 1rem; cursor: pointer; text-decoration: underline;">
+                    Maybe Later
+                </button>
+                <p style="margin-top: 1.5rem; font-size: 0.85rem; color: #999;">🔒 Secure payment via Flutterwave</p>
             </div>
         </div>
     `;
     document.body.appendChild(modal);
 }
 
-// Initialize payment with Flutterwave
 function initiatePayment() {
     const user = auth.currentUser;
     if (!user) {
-        alert('Please log in first');
+        alert('⚠️ Please log in first to subscribe.');
         window.location.href = '/login.html';
         return;
     }
+    
+    // Close modal
+    const modal = document.getElementById('praehire-payment-modal');
+    if (modal) modal.remove();
     
     FlutterwaveCheckout({
         public_key: "FLWPUBK-434a0db20b1c6eea1e22068ea72db4f4-X",
@@ -112,10 +116,10 @@ function initiatePayment() {
         callback: async function(data) {
             if (data.status === "successful") {
                 await activateSubscription(user.uid, data.transaction_id);
-                alert('Subscription activated! You now have full access.');
+                alert('✅ Subscription activated! You now have full access to all AI features.');
                 window.location.reload();
             } else {
-                alert('Payment failed. Please try again.');
+                alert('❌ Payment failed. Please try again.');
             }
         },
         onclose: function() {
@@ -124,10 +128,9 @@ function initiatePayment() {
     });
 }
 
-// Activate subscription after payment
 async function activateSubscription(userId, transactionId) {
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30); // 30 days from now
+    expiryDate.setDate(expiryDate.getDate() + 30);
     
     await db.collection('users').doc(userId).set({
         subscriptionActive: true,
@@ -137,7 +140,6 @@ async function activateSubscription(userId, transactionId) {
     }, { merge: true });
 }
 
-// Export for use in other files
 window.checkSubscriptionStatus = checkSubscriptionStatus;
 window.initiatePayment = initiatePayment;
 window.blockAIFeatures = blockAIFeatures;
