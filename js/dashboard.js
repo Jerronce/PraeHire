@@ -34,7 +34,7 @@ async function tailorResume() {
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -47,7 +47,9 @@ async function tailorResume() {
     const data = await response.json();
     console.log('API response:', data);
     
-    const tailoredText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "AI error: No response generated.";
+    const tailoredText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated';
+        
+        console.log('Tailored text:', tailoredText);
     
     if (optimizedField) {
       optimizedField.value = tailoredText;
