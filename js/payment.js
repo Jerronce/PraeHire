@@ -1,59 +1,79 @@
-// Flutterwave Payment Integration for PraeHire
-// International payment support - USD $100
+// Flutterwave Payment Integration - $100/MONTH Subscription
+// LIVE MODE - Real payments only!
 
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-PUBLIC-KEY-HERFLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X'; // Replace with your actual key
-const PAYMENT_AMOUNT = 100; // $100 USD
-const PAYMENT_CURRENCY = 'USD'; // Changed to USD for international payments
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-LIVE-KEY-HERE'; // Your LIVE public key
+const MONTHLY_SUBSCRIPTION_PRICE = 100; // $100 per month
+const PAYMENT_CURRENCY = 'USD';
+const ADMIN_EMAIL = "Jerronce101@gmail.com"; // Admin account - no payment needed
 
-// Check if user has paid
-async function checkPaymentStatus() {
+// Check if user is admin
+function isAdmin() {
+  const user = auth.currentUser;
+  return user && user.email === ADMIN_EMAIL;
+}
+
+// Check if user has active subscription
+async function hasActiveSubscription() {
   const user = auth.currentUser;
   if (!user) return false;
   
+  // Admin always has access
+  if (isAdmin()) return true;
+  
   try {
-    const userDoc = await db.collection('users').doc(user.uid).get();
-    return userDoc.data()?.hasPaid || false;
+    const userDoc = await db.collection('subscriptions').doc(user.uid).get();
+    if (!userDoc.exists) return false;
+    
+    const data = userDoc.data();
+    const subscriptionEnd = data.subscriptionEnd?.toDate();
+    const now = new Date();
+    
+    return subscriptionEnd && subscriptionEnd > now;
   } catch (error) {
-    console.error('Error checking payment status:', error);
+    console.error('Error checking subscription:', error);
     return false;
   }
 }
 
-// Initialize payment
-async function initiatePayment() {
+// Initialize monthly subscription payment
+async function initiateMonthlyPayment() {
   const user = auth.currentUser;
   if (!user) {
     alert('Please login first');
     return;
   }
 
-  const hasPaid = await checkPaymentStatus();
-  if (hasPaid) {
-    alert('You have already paid! Enjoy all features.');
+  if (isAdmin()) {
+    alert('You are the admin - no payment needed!');
     return;
   }
 
-  // Flutterwave configuration for international payments
+  const hasActive = await hasActiveSubscription();
+  if (hasActive) {
+    alert('You already have an active subscription!');
+    return;
+  }
+
+  // Flutterwave checkout for monthly subscription
   FlutterwaveCheckout({
     public_key: FLUTTERWAVE_PUBLIC_KEY,
-    tx_ref: 'praehire-' + Date.now(),
-    amount: PAYMENT_AMOUNT,
+    tx_ref: 'praehire-monthly-' + Date.now(),
+    amount: MONTHLY_SUBSCRIPTION_PRICE,
     currency: PAYMENT_CURRENCY,
-    // Accept all international payment methods
-    payment_options: 'card, banktransfer, ussd, credit, debit, mobilemoney, mpesa, qr, barter, payattitude',
+    payment_options: 'card, banktransfer, ussd, mobilemoney',
     customer: {
       email: user.email,
       name: user.displayName || 'PraeHire User',
     },
     customizations: {
-      title: 'PraeHire Pro - Lifetime Access',
-      description: 'One-time payment for lifetime access to AI-powered resume tailoring and interview practice',
+      title: 'PraeHire Monthly Subscription',
+      description: '$100/month - Access all AI-powered features',
       logo: 'https://praehire.web.app/logo.png',
     },
     callback: function(data) {
       console.log('Payment callback:', data);
       if (data.status === 'successful' || data.status === 'completed') {
-        verifyPayment(data.transaction_id);
+        activateSubscription(data.transaction_id);
       }
     },
     onclose: function() {
@@ -62,45 +82,53 @@ async function initiatePayment() {
   });
 }
 
-// Verify payment on backend
-async function verifyPayment(transactionId) {
+// Activate subscription after payment
+async function activateSubscription(transactionId) {
   const user = auth.currentUser;
   try {
-    // Update user's paid status in Firestore
-    await db.collection('users').doc(user.uid).set({
-      hasPaid: true,
-      paymentDate: new Date(),
-      transactionId: transactionId,
-      amount: PAYMENT_AMOUNT,
-      currency: PAYMENT_CURRENCY
-    }, { merge: true });
+    const now = new Date();
+    const subscriptionEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-    alert('🎉 Payment successful! You now have lifetime access to all PraeHire features.');
-    location.reload(); // Refresh to enable features
+    await db.collection('subscriptions').doc(user.uid).set({
+      userId: user.uid,
+      email: user.email,
+      subscriptionStart: now,
+      subscriptionEnd: subscriptionEnd,
+      amount: MONTHLY_SUBSCRIPTION_PRICE,
+      currency: PAYMENT_CURRENCY,
+      transactionId: transactionId,
+      status: 'active',
+      lastPayment: now
+    });
+
+    alert('🎉 Subscription activated! You have 30 days of access to all features.');
+    location.reload();
   } catch (error) {
-    console.error('Error verifying payment:', error);
-    alert('Payment verification failed. Please contact support with transaction ID: ' + transactionId);
+    console.error('Error activating subscription:', error);
+    alert('Payment verification failed. Transaction ID: ' + transactionId);
   }
 }
 
-// Block AI features if not paid
-async function requirePayment(featureName) {
-  const hasPaid = await checkPaymentStatus();
-  if (!hasPaid) {
+// Block features if no active subscription
+async function requireActiveSubscription(featureName) {
+  // Admin bypass
+  if (isAdmin()) return true;
+  
+  const hasActive = await hasActiveSubscription();
+  if (!hasActive) {
     const proceed = confirm(
-      `💎 ${featureName} is a premium feature.\n\n` +
-      `One-time payment: $${PAYMENT_AMOUNT} USD\n` +
-      `✅ Lifetime access to all AI features\n` +
-      `✅ Unlimited resume tailoring\n` +
+      `💎 ${featureName} requires a monthly subscription.\n\n` +
+      `💰 Price: $${MONTHLY_SUBSCRIPTION_PRICE} USD/month\n` +
+      `✅ Unlimited AI resume tailoring\n` +
       `✅ Unlimited interview practice\n` +
-      `✅ Accepted worldwide\n\n` +
-      `Proceed to payment?`
+      `✅ Access all premium features\n` +
+      `✅ Cancel anytime\n\n` +
+      `Subscribe now?`
     );
     if (proceed) {
-      initiatePayment();
+      initiateMonthlyPayment();
     }
     return false;
   }
   return true;
 }
-

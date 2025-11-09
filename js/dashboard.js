@@ -140,3 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('dashboard.js loaded successfully');
+
+// Add payment check to tailorResume function
+const originalTailorResume = tailorResume;
+tailorResume = async function() {
+    const canProceed = await requireActiveSubscription('Resume Tailor');
+    if (!canProceed) return;
+    return originalTailorResume.apply(this, arguments);
+};
