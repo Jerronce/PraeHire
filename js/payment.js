@@ -1,7 +1,7 @@
 // Flutterwave Payment Integration for PraeHire
 // International payment support - USD $100
 
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-PUBLIC-KEY-HERE'; // Replace with your actual key
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-PUBLIC-KEY-HERFLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X'; // Replace with your actual key
 const PAYMENT_AMOUNT = 100; // $100 USD
 const PAYMENT_CURRENCY = 'USD'; // Changed to USD for international payments
 
