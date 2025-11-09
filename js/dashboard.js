@@ -148,3 +148,48 @@ tailorResume = async function() {
     if (!canProceed) return;
     return originalTailorResume.apply(this, arguments);
 };
+
+// FORCE payment check on page load
+window.addEventListener('DOMContentLoaded', async function() {
+    // Skip if admin
+    if (auth.currentUser && auth.currentUser.email === "Jerronce101@gmail.com") {
+        console.log("Admin user - full access");
+        return;
+    }
+    
+    // Check subscription
+    const hasActive = await hasActiveSubscription();
+    if (!hasActive) {
+        // Disable all AI buttons
+        const aiButtons = document.querySelectorAll('[onclick*="tailor"], [onclick*="AI"]');
+        aiButtons.forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
+            btn.onclick = function(e) {
+                e.preventDefault();
+                const proceed = confirm(
+                    "💎 Subscribe to PraeHire Pro\\n\\n" +
+                    "💰 $100 USD/month\\n" +
+                    "✅ Unlimited AI features\\n" +
+                    "✅ Cancel anytime\\n\\n" +
+                    "Subscribe now?"
+                );
+                if (proceed) initiateMonthlyPayment();
+                return false;
+            };
+        });
+    }
+});
+
+// Block resume page access
+if (window.location.pathname.includes('resume.html')) {
+    (async function() {
+        if (auth.currentUser && auth.currentUser.email === "Jerronce101@gmail.com") return;
+        const hasActive = await hasActiveSubscription();
+        if (!hasActive) {
+            alert("❌ Subscribe to access this feature!\n\n$100/month for unlimited access");
+            window.location.href = 'dashboard.html';
+        }
+    })();
+}
