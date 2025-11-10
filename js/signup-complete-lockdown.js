@@ -1,77 +1,43 @@
-// COMPLETE SIGNUP LOCKDOWN - Fixed to not block tab navigation
+// COMPLETE SIGNUP LOCKDOWN - Does NOT block tab navigation
 const MONTHLY_PRICE_NGN = 165000;
 const ADMIN_EMAIL = 'Jerronce101@gmail.com';
 const FLUTTERWAVE_KEY = 'FLWPUBK-434a0db20b1c6eea1e22068ea72db4f4-X';
 
+let lockdownActive = false;
+
+// Wait for page to fully load
 window.addEventListener('DOMContentLoaded', () => {
-    // Small delay to ensure form is loaded
-    setTimeout(() => {
-        if (window.location.pathname.includes('login.html') || window.location.href.includes('signup')) {
-            const signupTab = document.querySelector('.signup-tab, [data-tab="signup"], button:contains("Sign Up")');
-            if (signupTab && signupTab.classList.contains('active')) {
-                completeFormLockdown();
-                showPaymentGate();
-            }
-            
-            // Watch for tab changes
-            document.addEventListener('click', (e) => {
-                setTimeout(() => {
-                    const currentTab = document.querySelector('.tab.active, button.active');
-                    if (currentTab && currentTab.textContent.includes('Sign Up')) {
-                        completeFormLockdown();
-                        showPaymentGate();
-                    }
-                }, 100);
-            });
-        }
-    }, 300);
+    setTimeout(initLockdown, 500);
 });
 
-function completeFormLockdown() {
+function initLockdown() {
+    // Check if we're on signup tab
+    const signupTab = document.getElementById('signupTab');
+    if (!signupTab) return;
+    
+    // Watch for signup tab activation
+    signupTab.addEventListener('click', () => {
+        setTimeout(() => {
+            if (!lockdownActive) {
+                activateLockdown();
+            }
+        }, 100);
+    });
+    
+    // If signup tab is already active, lock it down
+    if (signupTab.classList.contains('active')) {
+        setTimeout(activateLockdown, 200);
+    }
+}
+
+function activateLockdown() {
     const form = document.querySelector('form');
-    if (!form) return;
+    if (!form || lockdownActive) return;
     
-    // Remove any existing overlay first
-    const existingOverlay = document.getElementById('signup-blocker-overlay');
-    if (existingOverlay) existingOverlay.remove();
+    lockdownActive = true;
     
-    // Create overlay that ONLY covers the form, not the whole page
-    const overlay = document.createElement('div');
-    overlay.id = 'signup-blocker-overlay';
-    overlay.style.cssText = `
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 100;
-        background: transparent;
-        cursor: not-allowed;
-    `;
-    
-    // Make form container position relative so overlay stays within it
-    const formContainer = form.closest('div');
-    if (formContainer) {
-        formContainer.style.position = 'relative';
-    }
-    
-    overlay.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        alert('🔒 Payment required! Click the "Pay ₦165,000 & Sign Up" button above.');
-        return false;
-    }, true);
-    
-    overlay.addEventListener('keydown', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-    }, true);
-    
-    // Add overlay to form container, not body
-    if (formContainer) {
-        formContainer.appendChild(overlay);
-    }
+    // Show payment gate
+    showPaymentGate();
     
     // Disable form
     form.style.opacity = '0.3';
@@ -83,25 +49,40 @@ function completeFormLockdown() {
         el.readOnly = true;
     });
     
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        alert('⚠️ Payment required before signup!');
-        return false;
-    }, true);
+    // Create overlay ONLY over form
+    const formParent = form.parentElement;
+    if (formParent && !document.getElementById('signup-blocker-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'signup-blocker-overlay';
+        overlay.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 50;
+            background: transparent;
+            cursor: not-allowed;
+        `;
+        
+        overlay.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            alert('🔒 Payment required! Click "Pay ₦165,000 & Sign Up" above.');
+        }, true);
+        
+        formParent.style.position = 'relative';
+        formParent.appendChild(overlay);
+    }
 }
 
 function showPaymentGate() {
     const form = document.querySelector('form');
-    if (!form) return;
-    
-    // Remove existing gate if any
-    const existingGate = document.getElementById('payment-gate-box');
-    if (existingGate) return; // Already showing
+    if (!form || document.getElementById('payment-gate-box')) return;
     
     const gate = document.createElement('div');
     gate.id = 'payment-gate-box';
-    gate.style.cssText = 'position: relative; z-index: 101;';
+    gate.style.cssText = 'position: relative; z-index: 60; margin-bottom: 2rem;';
     gate.innerHTML = `
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem; border-radius: 20px; margin-bottom: 2rem; text-align: center; box-shadow: 0 15px 50px rgba(102, 126, 234, 0.5);">
             <div style="font-size: 4rem; margin-bottom: 1rem;">💳</div>
@@ -119,19 +100,18 @@ function showPaymentGate() {
     `;
     
     form.parentNode.insertBefore(gate, form);
-    
     document.getElementById('pay-signup-btn').addEventListener('click', startPayment);
 }
 
 function startPayment() {
-    const email = prompt('📮 Enter your email address to proceed with payment:');
+    const email = prompt('📮 Enter your email to proceed with payment:');
     if (!email || !email.includes('@')) {
-        alert('❌ Invalid email. Please try again.');
+        alert('❌ Invalid email. Try again.');
         return;
     }
     
     if (email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-        alert('✅ Admin Account!\n\nYou have FREE access.\n\nProceed with signup using: ' + email);
+        alert('✅ Admin Account!\n\nFREE access.\n\nProceed with signup: ' + email);
         unlockForm(email);
         return;
     }
@@ -156,11 +136,10 @@ function startPayment() {
                 localStorage.setItem('praehire_paid_email', email);
                 localStorage.setItem('praehire_tx_id', data.transaction_id);
                 localStorage.setItem('praehire_paid_date', new Date().toISOString());
-                
-                alert('✅ PAYMENT SUCCESSFUL!\n\nTransaction: ' + data.transaction_id + '\n\nCreate your account now.');
+                alert('✅ PAYMENT SUCCESS!\n\nTransaction: ' + data.transaction_id + '\n\nCreate account now.');
                 unlockForm(email);
             } else {
-                alert('❌ Payment not completed. Try again.');
+                alert('❌ Payment not completed.');
             }
         },
         onclose: function() {
@@ -170,6 +149,8 @@ function startPayment() {
 }
 
 function unlockForm(email) {
+    lockdownActive = false;
+    
     const overlay = document.getElementById('signup-blocker-overlay');
     if (overlay) overlay.remove();
     

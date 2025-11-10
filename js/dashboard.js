@@ -1,7 +1,7 @@
 import { auth, db, storage } from './firebase-config.js';
 import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js';
 
-const GEMINI_API_KEY = "AIzaSyATQe2BcLSrQqcDVVNEjjioPt3O1IbyLlo";
+const GEMINI_API_KEY = "AIzaSyDDuAMHmLQG7ST8cuCw6H_AE8nYg_N-Ums";
 
 // Logout functionality
 function logout() {
@@ -55,13 +55,13 @@ async function tailorResume() {
       optimizedField.value = tailoredText;
       console.log('Resume tailored successfully');
     }
-  } catch (error) {
-    console.error('Error tailoring resume:', error);
-    if (optimizedField) {
-      optimizedField.value = "Error: " + error.message;
-    }
-    alert('Failed to tailor resume: ' + error.message);
-  }
+} catch (error) {
+    console.error('Full error details:', error);
+    console.error('Error message:', error.message);
+    alert('AI Error: ' + error.message + '. Check console for details.');
+    optimizedField.value = "Error: " + error.message;
+}
+
 }
 
 async function autoApply() {
