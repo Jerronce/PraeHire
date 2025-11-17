@@ -1,7 +1,7 @@
 // Flutterwave Payment Integration - $100/MONTH Subscription
 // LIVE MODE - Real payments only!
 
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X'; // Your LIVE public key
+const FLUTTERWAVE_PUBLIC_KEY = 'bbc6558b-8811-4c53-9d2a-175baca389c2'; // Your LIVE public key
 const MONTHLY_SUBSCRIPTION_PRICE = 100; // $100 per month
 const PAYMENT_CURRENCY = 'USD';
 const ADMIN_EMAIL = "Jerronce101@gmail.com"; // Admin account - no payment needed
