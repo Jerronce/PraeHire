@@ -3,12 +3,12 @@ const ADMIN_EMAIL = 'Jeronce101@gmail.com';
 
 // Override Firebase signInWithEmailAndPassword
 if (typeof window !== 'undefined' && window.firebaseAuth) {
-    const originalSignIn = window.firebaseAuth.signin;
+    const originalSignIn = window.firebaseAuth.signIn;
     
-    window.firebaseAuth.signin = async function(auth, email, password) {
+    window.firebaseAuth.signIn = async function(auth, email, password) {
         // Only allow admin email
         if (email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
-            alert('⚠️ Access Denied!\n\nThis application is currently restricted.\nOnly the administrator can login.\n\nTo gain access, please complete payment at:\nhttps://praehire.web.app/payment');
+            alert('⚠️ Access Denied!\n\nThis application is currently restricted.\nOnly the administrator can login.\n\nTo gain access, please complete payment at:\nhttps://praehire.web.app/#pricing');
             throw new Error('Access denied: Admin-only mode');
         }
         
@@ -18,12 +18,12 @@ if (typeof window !== 'undefined' && window.firebaseAuth) {
 }
 
 // Block signup for non-admin users
-if (typeof window !== 'undefined' && window.firebaseAuth && window.firebaseAuth.signup) {
-    const originalSignUp = window.firebaseAuth.signup;
+if (typeof window !== 'undefined' && window.firebaseAuth && window.firebaseAuth.signUp) {
+    const originalSignUp = window.firebaseAuth.signUp;
     
-    window.firebaseAuth.signup = async function(auth, email, password) {
+    window.firebaseAuth.signUp = async function(auth, email, password) {
         // Block all signups - redirect to payment
-        alert('⚠️ New Signups Require Payment!\n\nTo create an account, you must complete payment first.\n\nPayment Required: $100/month\n\nPlease visit:\nhttps://praehire.web.app/payment');
+        alert('⚠️ New Signups Require Payment!\n\nTo create an account, you must complete payment first.\n\nPayment Required: $100/month\n\nPlease visit:\nhttps://praehire.web.app/#pricing');
         throw new Error('Signup blocked: Payment required');
     };
 }
