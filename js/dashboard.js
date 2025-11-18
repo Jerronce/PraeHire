@@ -1,3 +1,8 @@
+import { auth, db, storage } from './firebase-config.js';
+import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js';
+
+const GEMINI_API_KEY = "AIzaSyCui2JGjimd0wHiKXj4MPErVH5_9H8ArHc";
+
 // Logout functionality
 function logout() {
   console.log('Logout button clicked');
@@ -94,11 +99,6 @@ function initResumeValidation() {
       reader.readAsText(file);
     } else {
       resumeText.disabled = false;
-      resumeText.style.opacity = '1';
-    }
-  });
-}
-
 // API configuration
 const getApiKey = () => atob('QUl6YVN5Q3VpMkdKamltZDBySGlLWGo0TVBFclZINV85SDhBckhjCg==').trim();
 
@@ -160,6 +160,8 @@ async function tailorResume() {
       btn.disabled = false;
       btn.textContent = 'Tailor Resume with AI';
     }
+  }
+}
   }
 }
     }
