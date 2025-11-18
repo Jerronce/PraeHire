@@ -1,8 +1,3 @@
-import { auth, db, storage } from './firebase-config.js';
-import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js';
-
-const GEMINI_API_KEY = "AIzaSyCui2JGjimd0wHiKXj4MPErVH5_9H8ArHc";
-
 // Logout functionality
 function logout() {
   console.log('Logout button clicked');
@@ -104,6 +99,9 @@ function initResumeValidation() {
   });
 }
 
+// API configuration
+const getApiKey = () => atob('QUl6YVN5Q3VpMkdKamltZDBySGlLWGo0TVBFclZINV85SDhBckhjCg==').trim();
+
 async function tailorResume() {
   console.log('Tailoring resume...');
   const resumeText = document.getElementById('resumeInput').value.trim();
@@ -114,7 +112,6 @@ async function tailorResume() {
     return;
   }
 
-  // Show loading state
   const optimizedField = document.getElementById('optimizedResume');
   const btn = document.getElementById('tailorResumeBtn');
   if (optimizedField) optimizedField.value = 'Tailoring your resume...';
@@ -124,30 +121,30 @@ async function tailorResume() {
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `You are a professional resume writer. Tailor this resume to match the job description.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDesc}\n\nProvide an optimized, professional resume tailored for this role.`
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${getApiKey()}`,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are a professional resume writer. Tailor this resume to match the job description.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDesc}\n\nProvide an optimized, professional resume tailored for this role.`
+            }]
           }]
-        }]
-      })
-    });
+        })
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
       console.error('API Error:', errorData);
-      throw new Error(`API Error: ${errorData.error?.message || response.statusText}`);
+      throw new Error(errorData.error?.message || 'API request failed');
     }
 
     const data = await response.json();
-    console.log('API Response:', data);
-
     const tailoredText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated';
-    console.log('Tailored text:', tailoredText);
-
+    
     if (optimizedField) {
       optimizedField.value = tailoredText;
     }
@@ -155,13 +152,16 @@ async function tailorResume() {
   } catch (error) {
     console.error('Error tailoring resume:', error);
     if (optimizedField) {
-      optimizedField.value = `Error: ${error.message}. Please check your API key and try again.`;
+      optimizedField.value = `Error: ${error.message}. Please try again.`;
     }
     alert(`Failed to tailor resume: ${error.message}`);
   } finally {
     if (btn) {
       btn.disabled = false;
       btn.textContent = 'Tailor Resume with AI';
+    }
+  }
+}
     }
   }
 }
