@@ -17,6 +17,93 @@ function logout() {
     });
 }
 
+// Greeting functionality
+function setUserGreeting() {
+  const greetingEl = document.getElementById('userGreeting');
+  if (!greetingEl) return;
+  
+  const hour = new Date().getHours();
+  let greeting;
+  
+  if (hour >= 5 && hour < 12) {
+    greeting = 'Good Morning';
+  } else if (hour >= 12 && hour < 17) {
+    greeting = 'Good Afternoon';
+  } else if (hour >= 17 && hour < 22) {
+    greeting = 'Good Evening';
+  } else {
+    greeting = 'Good Night';
+  }
+  
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+      greetingEl.textContent = `${greeting}, ${displayName}`;
+    }
+  });
+}
+
+// Theme toggle functionality
+function initThemeToggle() {
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  body.classList.add(savedTheme + '-mode');
+  themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+  
+  themeToggle?.addEventListener('click', () => {
+    const isDark = body.classList.contains('dark-mode');
+    
+    if (isDark) {
+      body.classList.remove('dark-mode');
+      body.classList.add('light-mode');
+      themeToggle.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    } else {
+      body.classList.remove('light-mode');
+      body.classList.add('dark-mode');
+      themeToggle.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+}
+
+// Resume input validation
+function initResumeValidation() {
+  const resumeText = document.getElementById('resumeInput');
+  const fileInput = document.getElementById('resumeFile');
+  
+  resumeText?.addEventListener('input', () => {
+    if (resumeText.value.trim()) {
+      fileInput.disabled = true;
+      fileInput.style.opacity = '0.5';
+    } else {
+      fileInput.disabled = false;
+      fileInput.style.opacity = '1';
+    }
+  });
+  
+  fileInput?.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        resumeText.value = event.target.result;
+        resumeText.disabled = true;
+        resumeText.style.opacity = '0.5';
+      };
+      
+      reader.readAsText(file);
+    } else {
+      resumeText.disabled = false;
+      resumeText.style.opacity = '1';
+    }
+  });
+}
+
 async function tailorResume() {
   console.log('Tailoring resume...');
   const resumeText = document.getElementById("resumeInput")?.value?.trim();
@@ -197,6 +284,11 @@ if (window.location.pathname.includes('resume.html')) {
 // PAYMENT PROTECTION - Check on page load
 auth.onAuthStateChanged(async (user) => {
     if (user) {
+    // Initialize new features
+    setUserGreeting();
+    initThemeToggle();
+    initResumeValidation();
+    
         // Check subscription status
         const hasSubscription = await checkSubscriptionStatus();
         
