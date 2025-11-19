@@ -40,6 +40,9 @@ function setUserGreeting() {
       const displayName = user.displayName || user.email?.split('@')[0] || 'User';
           const greeting = setUserGreeting();
       greetingEl.textContent = `${greeting}, ${displayName}`;
+
+              // Initialize theme toggle
+                      initThemeToggle();
     }
   });
 }
