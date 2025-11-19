@@ -33,11 +33,12 @@ function setUserGreeting() {
     greeting = 'Good Evening';
   } else {
     greeting = 'Good Night';
-  }
+  return greeting;  }
   
   auth.onAuthStateChanged((user) => {
     if (user) {
       const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+          const greeting = setUserGreeting();
       greetingEl.textContent = `${greeting}, ${displayName}`;
     }
   });
