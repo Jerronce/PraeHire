@@ -1,0 +1,5 @@
+[33maca7675[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix: Link dashboard_additions.js, complete weather and greeting setup
+[33mab5a63a[m Fix: Add weather API, fix greeting with user name, add helper functions
+[33m2cf597d[m Add: Sweet UI animations, simplified greeting, weather widget, improved UX
+[33m7fd075f[m Fix: Disable admin lockdown, enable all features for admin
+[33me2c0fea[m Fix: Remove resume textarea, use file upload only
