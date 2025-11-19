@@ -35,13 +35,19 @@
         </div>
         <div class="topbar-right">
                           <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌙</button>
-            <div id="userGreeting" class="user-badge"></div>        </div>
-                    </header>
+                    </header>                    <div class="greeting-weather-container">
+                        <div id="userGreeting" class="greeting">Hello! 👋</div>
+                        <div id="weatherWidget" class="weather-widget">
+                            <span id="weatherIcon">🌤️</span>
+                            <span id="weatherTemp"></span>
+                        </div>
+                    </div>
       <section id="tab-resume" class="tab active">
         <h2>Resume Tailor</h2>
         <div class="card-grid">
           <div class="card">
             <h3>Your Resume</h3>
+            ls -la dashboard.html
             <div class="upload-row">
               <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt">
             </div>
