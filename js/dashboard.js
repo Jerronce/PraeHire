@@ -76,17 +76,17 @@ function initThemeToggle() {
 
 // Resume input validation
 function initResumeValidation() {
-  const resumeText = document.getElementById('resumeInput');
+//  const resumeText = document.getElementById('resumeInput');
   const fileInput = document.getElementById('resumeFile');
   
-  resumeText?.addEventListener('input', () => {
+  /*resumeText?.addEventListener('input', () => {
     if (resumeText.value.trim()) {
       fileInput.disabled = true;
       fileInput.style.opacity = '0.5';
     } else {
       fileInput.disabled = false;
       fileInput.style.opacity = '1';
-    }
+    } */
   });
   
   fileInput?.addEventListener('change', (e) => {
