@@ -9,9 +9,9 @@ print()
 
 # Create the complete payment.js with monthly subscriptions
 payment_js = f'''// Flutterwave Payment Integration - $100/MONTH Subscription
-// LIVE MODE - Real payments only!
+// FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X MODE - Real payments only!
 
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-LIVE-KEY-HERE'; // Your LIVE public key
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X-KEY-HERE'; // Your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X public key
 const MONTHLY_SUBSCRIPTION_PRICE = 100; // $100 per month
 const PAYMENT_CURRENCY = 'USD';
 const ADMIN_EMAIL = "{ADMIN_EMAIL}"; // Admin account - no payment needed
@@ -182,7 +182,7 @@ signup_gate_html = '''<!DOCTYPE html>
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     <script src="js/firebase-config.js"></script>
     <script>
-        const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-LIVE-KEY-HERE';
+        const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-YOUR-FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X-KEY-HERE';
         const MONTHLY_PRICE = 100;
         
         function initiatePaymentThenSignup() {
@@ -229,7 +229,7 @@ print("✅ Created payment-gate.html for pay-first signup")
 print("\n🎉 All files created!")
 print("\nNext steps:")
 print("1. Update ADMIN_EMAIL in payment.js to your actual Gmail")
-print("2. Add your LIVE Flutterwave public key (not test key!)")
+print("2. Add your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X Flutterwave public key (not test key!)")
 print("3. Run: git add . && git commit -m 'Add monthly subscription' && git push")
 print("4. Deploy to Firebase")
-print("\n⚠️  IMPORTANT: Use your LIVE Flutterwave key, not test!")
+print("\n⚠️  IMPORTANT: Use your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X Flutterwave key, not test!")

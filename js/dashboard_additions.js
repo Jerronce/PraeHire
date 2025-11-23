@@ -10,7 +10,7 @@ function initWeatherAndGreeting() {
       const greetingDiv = document.getElementById('userGreeting');
       if (greetingDiv) {
         const userName = user.displayName || user.email?.split('@')[0] || 'User';
-        greetingDiv.innerHTML = `Hello, ${userName}! 👋`;
+        greetingDiv.innerHTML = `Hello! 👋 ${userName};
       }
       
       // Initialize weather
@@ -120,4 +120,31 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initWeatherAndGreeting);
 } else {
   initWeatherAndGreeting();
+}
+
+// Logout functionality
+import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+const auth = getAuth();
+
+function logout() {
+  console.log('Logout button clicked');
+  signOut(auth)
+    .then(() => {
+      console.log('Sign out successful, redirecting to login...');
+      window.location.href = 'login.html';
+    })
+    .catch((error) => {
+      console.error('Logout error:', error);
+      alert('Logout failed: ' + error.message);
+    });
+}
+
+// Attach logout event listener
+const logoutBtn = document.getElementById('logoutBtn');
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', logout);
+  console.log('Logout button listener attached');
+} else {
+  console.error('Logout button not found!');
 }

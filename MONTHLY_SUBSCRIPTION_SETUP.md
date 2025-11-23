@@ -5,7 +5,7 @@
 ### ✅ 1. Monthly Subscription ($100/month)
 - **NOT lifetime** - Users pay $100 USD every month
 - **Recurring billing** - Must renew after 30 days
-- **Real payments only** - LIVE mode, no testing
+- **Real payments only** - FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X mode, no testing
 
 ### ✅ 2. Payment BEFORE Signup
 - New users must pay FIRST
@@ -38,13 +38,13 @@ Open `js/payment.js` and change line 7:
 const ADMIN_EMAIL = "your.email@gmail.com"; // Your actual Gmail
 ```
 
-### 2. Your LIVE Flutterwave Key
+### 2. Your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X Flutterwave Key
 Open `js/payment.js` and change line 5:
 ```javascript
-const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your LIVE key
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X key
 ```
 
-**IMPORTANT**: Use your **LIVE** key, NOT test key!
+**IMPORTANT**: Use your **FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X** key, NOT test key!
 
 ---
 
@@ -118,7 +118,7 @@ const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your LIVE key
 1. Create new account (not your Gmail)
 2. Try Resume Tailor
 3. Should see: "Subscribe for $100/month"
-4. Use LIVE card to test real payment
+4. Use FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X card to test real payment
 
 ---
 
@@ -135,9 +135,9 @@ Check your Flutterwave dashboard to see:
 ## What Happens Next:
 
 1. I update your admin email
-2. Verify Flutterwave LIVE key is added
+2. Verify Flutterwave FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X key is added
 3. Commit all changes
 4. Push to GitHub
 5. Deploy to Firebase
-6. Your site goes LIVE with monthly subscriptions!
+6. Your site goes FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X with monthly subscriptions!
 

@@ -1,8 +1,7 @@
 // Flutterwave Payment Integration - $100/MONTH Subscription
-// LIVE MODE - Real payments only!
+// FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X MODE - Real payments only!
 
-const FLUTTERWAVE_PUBLIC_KEY = 'bbc6558b-8811-4c53-9d2a-175baca389c2'; // Your LIVE public key
-const MONTHLY_SUBSCRIPTION_PRICE = 100; // $100 per month
+const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X'; // Your LIVE public keyconst MONTHLY_SUBSCRIPTION_PRICE = 100; // $100 per month
 const PAYMENT_CURRENCY = 'USD';
 const ADMIN_EMAIL = "Jerronce101@gmail.com"; // Admin account - no payment needed
 
@@ -10,9 +9,9 @@ const ADMIN_EMAIL = "Jerronce101@gmail.com"; // Admin account - no payment neede
 function isAdmin() {
   const user = auth.currentUser;
   return user && user.email === ADMIN_EMAIL;
-}git add . && git commit -m 'Update Flutterwave LIVE public key' && git push
+}git add . && git commit -m 'Update Flutterwave FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X public key' && git push
 git status
-git add js/payment.js && git commit -m 'Add LIVE Flutterwave key' && git push
+git add js/payment.js && git commit -m 'Add FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X Flutterwave key' && git push
 cat > js/payment-enforcement.js << 'PAYEOF'
 // PAYMENT ENFORCEMENT - NGN currency for Flutterwave
 const ADMIN_EMAIL = 'Jerronce101@gmail.com';

@@ -98,8 +98,8 @@ Flutterwave provides test cards for testing:
 - PIN: 3310
 - OTP: 12345
 
-### Live Mode:
-Once tested, switch to your live public key for real payments.
+### FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X Mode:
+Once tested, switch to your FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X public key for real payments.
 
 ## Support
 
