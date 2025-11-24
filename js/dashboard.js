@@ -1,8 +1,6 @@
 import { auth, db, storage } from './firebase-config.js';
 import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js';
 
-const GEMINI_API_KEY = "AIzaSyCui2JGjimd0wHiKXj4MPErVH5_9H8ArHc";
-const OPENWEATHER_API_KEY = "ba065545e26fb7893c9dba89f5a8a8a6";
 
 // Resume file handling
 let resumeFileContent = null;
@@ -13,14 +11,36 @@ if (resumeFileInput) {
     resumeFileInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (file) {
-            try {
-                resumeFileContent = await file.text();
+try {
+                // Use PDF.js to extract text from PDF files
+                const fileReader = new FileReader();
+                const fileData = await new Promise((resolve, reject) => {
+                    fileReader.onload = (e) => resolve(new Uint8Array(e.target.result));
+                    fileReader.onerror = reject;
+                    fileReader.readAsArrayBuffer(file);
+                });
+                
+                // Set worker source for PDF.js
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                
+                // Load the PDF document
+                const pdf = await pdfjsLib.getDocument({data: fileData}).promise;
+                let fullText = '';
+                
+                // Extract text from all pages
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n';
+                }
+                
+                resumeFileContent = fullText;
                 console.log('Resume file loaded successfully');
             } catch (error) {
                 console.error('Error reading file:', error);
                 alert('Error reading file. Please try again.');
-            }
-        }
+            }        }
     });
 }
 
