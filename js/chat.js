@@ -46,34 +46,35 @@ class ChatManager {
     await this.getGeminiResponse(message);
   }
 
+
   async getGeminiResponse(userMessage) {
     try {
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `You are an AI interview assistant for PraeHire. Help users prepare for interviews by asking relevant questions and providing feedback. User message: ${userMessage}`
-            }]
-          }]
-        })
-      });
+      const response = await fetch(
+        'https://us-central1-praehire.cloudfunctions.net/interviewChat',
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({message: userMessage})
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get AI response');
+      }
 
       const data = await response.json();
-      
-      if (data.candidates && data.candidates[0]) {
-        const aiMessage = data.candidates[0].content.parts[0].text;
-        this.displayMessage(aiMessage, 'ai');
-        await this.saveMessage(aiMessage, 'ai');
-      } else {
+      const aiMessage = data.response;
+
+      if (!aiMessage) {
         throw new Error('No response from AI');
       }
+
+      this.displayMessage(aiMessage, 'ai');
+      await this.saveMessage(aiMessage, 'ai');
     } catch (error) {
       console.error('Error getting AI response:', error);
-      const errorMessage = 'Sorry, I encountered an error. Please try again.';
+      const errorMessage = error.message || error.toString() || 'Sorry, I encountered an error';
       this.displayMessage(errorMessage, 'ai');
     }
   }
