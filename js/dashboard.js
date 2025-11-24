@@ -97,10 +97,9 @@ async function tailorResume() {
         console.log('Resume tailored successfully!');
     } catch (error) {
         console.error('Error tailoring resume:', error);
-        optimizedField.value = 'Error: ' + error.message;
-        optimizedField.disabled = false;
-        alert('Failed to tailor resume: ' + error.message);
-    }
+        const errorMessage = error.message || error.toString() || 'An unknown error occurred';
+        optimizedField.value = 'Error: ' + errorMessage;        optimizedField.disabled = false;
+        alert('Failed to tailor resume: ' + errorMessage);    }
 }
 
 // Attach event listener to Tailor Resume button
