@@ -1,1 +1,247 @@
-handleFileUploadNew
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Analysis - PraeHire</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <div class="logo">
+                <h1>PraeHire<span class="ai-badge">AI</span></h1>
+            </div>
+            <nav class="main-nav">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="resume.html" class="active">Resume Analysis</a>
+                <a href="interview.html">Mock Interview</a>
+                <button id="logoutBtn" class="btn-secondary">Logout</button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <section class="upload-section">
+                <h2>Upload Your Resume</h2>
+                <p>Upload your resume for AI-powered analysis and optimization</p>
+                
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-icon">📄</div>
+                    <p>Drag & drop your resume here or click to browse</p>
+                    <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt" hidden>
+                    <button class="btn-primary" onclick="document.getElementById('resumeFile').click()">Choose File</button>
+                </div>
+
+                <div class="job-description-section" style="margin-top: 30px;">
+                    <h3>Job Description (Optional)</h3>
+                    <p>Paste the job description to tailor your resume for this specific role</p>
+                    <textarea 
+                        id="jobDescription" 
+                        placeholder="Paste job description here to get tailored resume optimization..."
+                        rows="8"
+                        style="width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 14px;"
+                    ></textarea>
+                </div>
+            </section>
+
+            <section class="analysis-section" id="analysisSection" style="display: none;">
+                <h2>Resume Analysis</h2>
+                <div class="analysis-card">
+                    <h3>Overall Score: <span id="overallScore" class="score">--</span>/100</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="scoreFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="analysis-grid">
+                    <div class="analysis-card">
+                        <h3>✅ Strengths</h3>
+                        <ul id="strengthsList"></ul>
+                    </div>
+
+                    <div class="analysis-card">
+                        <h3>⚠️ Areas for Improvement</h3>
+                        <ul id="improvementsList"></ul>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>🎯 Recommendations</h3>
+                    <div id="recommendationsText" class="recommendations-text"></div>
+                </div>
+
+                <div class="analysis-card">
+                    <h3>🔍 Keyword Analysis</h3>
+                    <div id="keywordsContainer" class="keywords-container"></div>
+                </div>
+
+                <!-- Optimized Resume Section -->
+                <div class="analysis-card" id="optimizedResumeSection" style="display: none;">
+                    <h3>📝 Optimized Resume</h3>
+                    <p>Your tailored resume based on the job description:</p>
+                    <div id="optimizedResumeContent" style="background: #f9f9f9; padding: 20px; border-radius: 8px; white-space: pre-wrap; font-family: monospace; max-height: 600px; overflow-y: auto;"></div>
+                    <button class="btn-primary" id="downloadOptimizedBtn" style="margin-top: 15px;">Download Optimized Resume</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script type="module" src="js/firebase.js"></script>
+    <script type="module" src="js/main.js"></script>
+    <script type="module">
+        import { auth, functions } from './js/firebase.js';
+        import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { httpsCallable } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js';
+
+        // Check authentication
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await auth.signOut();
+            window.location.href = 'login.html';
+        });
+
+        // File upload handling
+        const uploadZone = document.getElementById('uploadZone');
+        const resumeFile = document.getElementById('resumeFile');
+        const jobDescription = document.getElementById('jobDescription');
+        const analysisSection = document.getElementById('analysisSection');
+        const optimizedResumeSection = document.getElementById('optimizedResumeSection');
+
+        // Drag and drop handlers
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-over');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-over');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        resumeFile.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        async function handleFileUpload(file) {
+            try {
+                // Show loading state
+                uploadZone.innerHTML = '<div class="loading">Analyzing your resume...</div>';
+                
+                // Read file content
+                const fileContent = await readFileContent(file);
+                const jobDesc = jobDescription.value.trim();
+                
+                // Call Firebase Cloud Function for resume analysis
+                const analyzeResume = httpsCallable(functions, 'analyzeResume');
+                const result = await analyzeResume({ 
+                    resumeText: fileContent,
+                    jobDescription: jobDesc
+                });
+                
+                displayAnalysis(result.data);
+                
+                // Reset upload zone
+                uploadZone.innerHTML = `
+                    <div class="upload-icon">✓</div>
+                    <p>Resume analyzed successfully!</p>
+                    <button class="btn-primary" onclick="document.getElementById('resumeFile').click()">Upload Another</button>
+                `;
+            } catch (error) {
+                console.error('Error analyzing resume:', error);
+                uploadZone.innerHTML = `
+                    <div class="upload-icon">❌</div>
+                    <p>Error analyzing resume. Please try again.</p>
+                    <p style="color: #dc3545; font-size: 14px;">${error.message}</p>
+                    <button class="btn-primary" onclick="document.getElementById('resumeFile').click()">Try Again</button>
+                `;
+            }
+        }
+
+        function readFileContent(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('Failed to read file'));
+                reader.readAsText(file);
+            });
+        }
+
+        function displayAnalysis(data) {
+            // Show analysis section
+            analysisSection.style.display = 'block';
+            analysisSection.scrollIntoView({ behavior: 'smooth' });
+
+            // Update score
+            document.getElementById('overallScore').textContent = data.score || 0;
+            document.getElementById('scoreFill').style.width = (data.score || 0) + '%';
+
+            // Update strengths
+            const strengthsList = document.getElementById('strengthsList');
+            strengthsList.innerHTML = '';
+            (data.strengths || []).forEach(strength => {
+                const li = document.createElement('li');
+                li.textContent = strength;
+                strengthsList.appendChild(li);
+            });
+
+            // Update improvements
+            const improvementsList = document.getElementById('improvementsList');
+            improvementsList.innerHTML = '';
+            (data.improvements || []).forEach(improvement => {
+                const li = document.createElement('li');
+                li.textContent = improvement;
+                improvementsList.appendChild(li);
+            });
+
+            // Update recommendations
+            document.getElementById('recommendationsText').textContent = data.recommendations || 'No recommendations available.';
+
+            // Update keywords
+            const keywordsContainer = document.getElementById('keywordsContainer');
+            keywordsContainer.innerHTML = '';
+            (data.keywords || []).forEach(keyword => {
+                const tag = document.createElement('span');
+                tag.className = 'keyword-tag';
+                tag.textContent = keyword;
+                keywordsContainer.appendChild(tag);
+            });
+
+            // Display optimized resume if available
+            if (data.optimizedResume) {
+                optimizedResumeSection.style.display = 'block';
+                document.getElementById('optimizedResumeContent').textContent = data.optimizedResume;
+                
+                // Download handler
+                document.getElementById('downloadOptimizedBtn').onclick = () => {
+                    const blob = new Blob([data.optimizedResume], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'optimized_resume.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                };
+            }
+        }
+    </script>
+    <script src="https://checkout.flutterwave.com/v3.js"></script>
+</body>
+</html>
