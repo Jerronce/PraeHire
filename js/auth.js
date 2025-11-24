@@ -93,12 +93,12 @@ if (googleBtn) {
       const ADMIN_EMAIL = 'jerronce101@gmail.com';
       
       if (user.email && user.email.toLowerCase() !== ADMIN_EMAIL) {
-        // Unauthorized email - sign them out immediately
-        await auth.signOut();
-        alert('Access Denied: Only the admin account is authorized to access PraeHire.');
-        throw new Error('Unauthorized email address');
+        // Non-admin user - redirect to payment page
+        window.location.href = 'payment-gate.html';
+        return;
       }
-      window.location.href = 'dashboard.html';
+      // Admin user - proceed to dashboard
+      window.location.href = 'dashboard.html';      }
     } catch (err) {
       alert(err.message);
     }
