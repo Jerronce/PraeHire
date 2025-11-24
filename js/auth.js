@@ -33,6 +33,17 @@ if (loginForm) {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      
+      // ADMIN LOCKDOWN: Only Jerronce101@gmail.com is allowed
+      const ADMIN_EMAIL = 'jerronce101@gmail.com';
+      const currentUser = auth.currentUser;
+      
+      if (currentUser && currentUser.email && currentUser.email.toLowerCase() !== ADMIN_EMAIL) {
+        // Unauthorized email - sign them out immediately
+        await auth.signOut();
+        errorEl.textContent = 'Access Denied: Only the admin account is authorized to access PraeHire.';
+        return;
+      }
       window.location.href = 'dashboard.html';
     } catch (err) {
       errorEl.textContent = err.message;
@@ -53,6 +64,13 @@ if (signupForm) {
       errorEl.textContent = 'Passwords do not match';
       return;
     }
+    
+    // ADMIN LOCKDOWN: Only Jerronce101@gmail.com can create an account
+    const ADMIN_EMAIL = 'jerronce101@gmail.com';
+    if (email.toLowerCase() !== ADMIN_EMAIL) {
+      errorEl.textContent = 'Access Denied: Only the admin email is authorized to create an account.';
+      return;
+    }
 
     try {
       await createUserWithEmailAndPassword(auth, email, password);
@@ -68,7 +86,18 @@ if (googleBtn) {
   googleBtn.addEventListener('click', async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await const result = signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      // ADMIN LOCKDOWN: Only Jerronce101@gmail.com is allowed
+      const ADMIN_EMAIL = 'jerronce101@gmail.com';
+      
+      if (user.email && user.email.toLowerCase() !== ADMIN_EMAIL) {
+        // Unauthorized email - sign them out immediately
+        await auth.signOut();
+        alert('Access Denied: Only the admin account is authorized to access PraeHire.');
+        throw new Error('Unauthorized email address');
+      }
       window.location.href = 'dashboard.html';
     } catch (err) {
       alert(err.message);
