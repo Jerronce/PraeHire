@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginTab = document.getElementById('loginTab');
     const signupTab = document.getElementById('signupTab');
     const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('SignupForm');
+    const signupForm = document.getElementById('signupForm');
     const googleBtn = document.getElementById('googleSignIn');
     const forgotPasswordLink = document.querySelector('.forgot-link');
     
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupEmail = document.getElementById('signupEmail');
     const signupPassword = document.getElementById('signupPassword');
     const signupError = document.getElementById('signupError');
-    const signupButton = document.querySelector('#SignupForm button[type="button"]');
+    const signupButton = document.querySelector('#signupForm button[type="button"]');
     
     console.log('✅ Elements loaded:', {
         loginTab: !!loginTab,
