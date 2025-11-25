@@ -86,7 +86,7 @@ if (googleBtn) {
   googleBtn.addEventListener('click', async () => {
     try {
       const provider = new GoogleAuthProvider();
-      await const result = signInWithPopup(auth, provider);
+      const const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
       // ADMIN LOCKDOWN: Only Jerronce101@gmail.com is allowed
