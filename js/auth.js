@@ -6,7 +6,7 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthP
 const loginTab = document.getElementById('loginTab');
 const signupTab = document.getElementById('signupTab');
 const loginForm = document.getElementById('loginForm');
-const signupForm = document.getElementById('signupForm');
+const signupForm = document.getElementById('SignupForm');
 
 if (loginTab && signupTab) {
   loginTab.addEventListener('click', () => {
