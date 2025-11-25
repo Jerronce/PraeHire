@@ -1,228 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PraeHire - AI-Powered Job Application Assistant</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PraeHire - AI-Powered Job Application Assistant</title>
+  <meta name="description" content="PraeHire helps automate your job search with AI-powered resumes, cover letters, and interview prep.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Landing Page -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">
-                <span class="logo-icon">🎯</span>
-                <span class="logo-text">PraeHire</span>
-            </div>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#how-it-works">How It Works</a>
-                                <a href="#pricing">Pricing</a>
-                <a href="login.html" class="btn-secondary">Login</a>
-                <a href="login.html" class="btn-primary">Get Started</a>
-            </div>
-        </div>
-    </nav>
+  <!-- Landing Page -->
+  <nav class="navbar" aria-label="Main Navigation">
+    <div class="container">
+      <div class="logo" aria-label="PraeHire Logo">
+        <span class="logo-icon">🎯</span>
+        <span class="logo-text">PraeHire</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#pricing">Pricing</a>
+        <a href="login.html" class="btn-primary">Get Started</a>
+      </div>
+    </div>
+  </nav>
 
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    Your AI-Powered <br>
-                    <span class="gradient-text">Job Application</span> <br>
-                    Assistant
-                </h1>
-                <p class="hero-subtitle">
-                    PraeHire automates your job search with AI-tailored resumes, 
-                    custom cover letters, and intelligent interview preparation.
-                </p>
-                <div class="hero-buttons">
-                    <a href="login.html" class="btn-primary btn-large">Start Applying Now</a>
-                    <a href="#features" class="btn-outline btn-large">Learn More</a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-number">10x</span>
-                        <span class="stat-label">Faster Applications</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">95%</span>
-                        <span class="stat-label">Match Rate</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number">AI</span>
-                        <span class="stat-label">Powered</span>
-                    </div>
-                </div>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container">
+        <div class="hero-content">
+          <h1 id="hero-title" class="hero-title">
+            Your AI-Powered <br>
+            <span class="gradient-text">Job Application</span> <br>
+            Assistant
+          </h1>
+          <p class="hero-subtitle">
+            PraeHire automates your job search with AI-tailored resumes,
+            custom cover letters, and intelligent interview preparation.
+          </p>
+          <div class="hero-buttons">
+            <a href="login.html" class="btn-primary btn-large">Start Applying Now</a>
+            <a href="#features" class="btn-outline btn-large">Learn More</a>
+          </div>
+          <div class="hero-stats" aria-label="Platform stats">
+            <div class="stat">
+              <span class="stat-number">10x</span>
+              <span class="stat-label">Faster Applications</span>
             </div>
+            <div class="stat">
+              <span class="stat-number">95%</span>
+              <span class="stat-label">Match Rate</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">AI</span>
+              <span class="stat-label">Powered</span>
+            </div>
+          </div>
         </div>
+      </div>
     </section>
 
-    <section id="features" class="features">
-        <div class="container">
-            <h2 class="section-title">Powerful Features</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🧾</div>
-                    <h3>Resume Tailor</h3>
-                    <p>Upload your resume and job description. Our AI optimizes it for ATS and hiring managers.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💼</div>
-                    <h3>Auto Apply</h3>
-                    <p>Paste job links and let PraeHire automatically apply with tailored applications.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎙</div>
-                    <h3>Interview Practice</h3>
-                    <p>Get AI-generated answers to interview questions based on your role and experience.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">✍️</div>
-                    <h3>Cover Letters</h3>
-                    <p>Generate custom, compelling cover letters for each job application.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3>Secure Storage</h3>
-                    <p>Your data is encrypted and stored securely with Firebase Authentication.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Application Tracking</h3>
-                    <p>Monitor all your applications in one dashboard with real-time updates.</p>
-                </div>
-            </div>
+    <section id="features" class="features" aria-labelledby="features-title">
+      <div class="container">
+        <h2 id="features-title" class="section-title">Powerful Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">🧾</div>
+            <h3>Resume Tailor</h3>
+            <p>Upload your resume and job description. Our AI optimizes it for ATS and hiring managers.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">💼</div>
+            <h3>Auto Apply</h3>
+            <p>Paste job links and let PraeHire automatically apply with tailored applications.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">🎙</div>
+            <h3>Interview Practice</h3>
+            <p>Get AI-generated answers to interview questions based on your role and experience.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">✍️</div>
+            <h3>Cover Letters</h3>
+            <p>Generate custom, compelling cover letters for each job application.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">🔒</div>
+            <h3>Secure Storage</h3>
+            <p>Your data is encrypted and stored securely with Firebase Authentication.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">📊</div>
+            <h3>Application Tracking</h3>
+            <p>Monitor all your applications in one dashboard with real-time updates.</p>
+          </div>
         </div>
+      </div>
     </section>
 
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Sign Up</h3>
-                    <p>Create your account and upload your base resume</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Paste Job Details</h3>
-                    <p>Add job descriptions or links you want to apply to</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>AI Optimization</h3>
-                    <p>Our AI tailors your resume and generates cover letters</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">4</div>
-                    <h3>Get Hired</h3>
-                    <p>Review, apply, and ace interviews with AI assistance</p>
-                </div>
-            </div>
+    <section id="how-it-works" class="how-it-works" aria-labelledby="howitworks-title">
+      <div class="container">
+        <h2 id="howitworks-title" class="section-title">How It Works</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Sign Up</h3>
+            <p>Create your account and upload your base resume</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Paste Job Details</h3>
+            <p>Add job descriptions or links you want to apply to</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>AI Optimization</h3>
+            <p>Our AI tailors your resume and generates cover letters</p>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <h3>Get Hired</h3>
+            <p>Review, apply, and ace interviews with AI assistance</p>
+          </div>
         </div>
+      </div>
     </section>
 
-        <!-- Pricing Section -->
-    <section id="pricing" class="pricing">
-        <div class="container">
-            <h2 class="section-title">Simple, Transparent Pricing</h2>
-            <p class="pricing-subtitle">Get unlimited access to all features with our monthly subscription</p>
-            
-            <div class="pricing-card">
-                <div class="pricing-header">
-                    <h3>Pro Plan</h3>
-                    <div class="price">
-                        <span class="currency">$</span>
-                        <span class="amount">100</span>
-                        <span class="period">/month</span>
-                    </div>
-                </div>
-                
-                <div class="pricing-features">
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Unlimited resume tailoring</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Unlimited cover letter generation</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>AI-powered job applications</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Interview preparation assistance</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Application tracking dashboard</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Priority support</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="check-icon">✓</span>
-                        <span>Cancel anytime</span>
-                    </div>
-                </div>
-                
-                <a href="login.html" class="btn-primary btn-large">Start Your Subscription</a>
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing" aria-labelledby="pricing-title">
+      <div class="container">
+        <h2 id="pricing-title" class="section-title">Simple, Transparent Pricing</h2>
+        <p class="pricing-subtitle">Get unlimited access to all features with our monthly subscription</p>
+        <div class="pricing-card">
+          <div class="pricing-header">
+            <h3>Pro Plan</h3>
+            <div class="price">
+              <span class="currency">$</span>
+              <span class="amount">100</span>
+              <span class="period">/month</span>
             </div>
+          </div>
+          <div class="pricing-features">
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Unlimited resume tailoring</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Unlimited cover letter generation</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>AI-powered job applications</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Interview preparation assistance</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Application tracking dashboard</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Priority support</span>
+            </div>
+            <div class="feature-item">
+              <span class="check-icon">✓</span>
+              <span>Cancel anytime</span>
+            </div>
+          </div>
+          <a href="login.html" class="btn-primary btn-large">Start Your Subscription</a>
         </div>
+      </div>
     </section>
 
-    <section class="cta">
-        <div class="container">
-            <h2>Ready to Transform Your Job Search?</h2>
-            <p>Join thousands of professionals using AI to land their dream jobs</p>
-            <a href="login.html" class="btn-primary btn-large">Get Started Free</a>
-        </div>
+    <section class="cta" aria-labelledby="cta-title">
+      <div class="container">
+        <h2 id="cta-title">Ready to Transform Your Job Search?</h2>
+        <p>Join thousands of professionals using AI to land their dream jobs</p>
+        <a href="login.html" class="btn-primary btn-large">Get Started Free</a>
+      </div>
     </section>
+  </main>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">🎯</span>
-                        <span class="logo-text">PraeHire</span>
-                    </div>
-                    <p>AI-Powered Job Application Assistant</p>
-                                        <p><strong>Contact Us:</strong></p>
-                                        <p>📍 HOUSE 53 KOSEBINU STREET AT THE SIDE OF A CAC CHURCH CARBOWHE BUSTOP, ALIMOSHO, LAGOS.</p>
-                                        <p>📞 +2348137917762</p>
-                </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h4>Product</h4>
-                        <a href="#features">Features</a>
-                        <a href="#how-it-works">How It Works</a>
-                        <a href="#pricing">Pricing</a>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Company</h4>
-                        <a href="#">About</a>
-                    <a href="privacy.html">Privacy</a>
-                    <a href="terms.html">Terms</a>
-                                            <a href="refund.html">Refund Policy</a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 PraeHire. All rights reserved.</p>
-            </div>
+  <footer class="footer" aria-label="Site Footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo" aria-label="PraeHire Footer Logo">
+            <span class="logo-icon">🎯</span>
+            <span class="logo-text">PraeHire</span>
+          </div>
+          <p>AI-Powered Job Application Assistant</p>
+          <p><strong>Contact Us:</strong></p>
+          <p>
+            📍 HOUSE 53 KOSEBINU STREET AT THE SIDE OF A CAC CHURCH CARBOWHE BUSTOP, ALIMOSHO, LAGOS.<br>
+            📞 +2348137917762
+          </p>
         </div>
-    </footer>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Product</h4>
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#pricing">Pricing</a>
+          </div>
+          <div class="footer-column">
+            <h4>Company</h4>
+            <a href="#">About</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="terms.html">Terms</a>
+            <a href="refund.html">Refund Policy</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 PraeHire. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-    <script src="js/main.js"></script>
-    <script src="https://checkout.flutterwave.com/v3.js"></script>
+  <!-- JavaScript dependencies just before </body> for best performance -->
+  <script src="js/main.js"></script>
+  <script src="https://checkout.flutterwave.com/v3.js"></script>
 </body>
 </html>
