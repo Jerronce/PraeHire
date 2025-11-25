@@ -18,13 +18,20 @@
                     <span class="logo-icon">🎯</span>
                     <span class="logo-text">PraeHire</span>
                 </div>
-                <h1>Welcome Back</h1>
+                <h1>Welcome</h1>
                 <p>Sign in to continue your job search</p>
             </div>
             <div class="auth-tabs">
                 <button class="tab-btn active" id="loginTab">Login</button>
                 <button class="tab-btn" id="signupTab">Sign Up</button>
             </div>
+            <div class="google-signin-button">
+  <button type="button" onclick="handleGoogleSignIn()">Sign In with Google</button>
+</div>
+<div class="back-to-home">
+  <a href="index.html"><button type="button">Back to Home</button></a>
+</div>
+
                     <script>
             // Simple tab switching
             document.getElementById('loginTab').onclick = function() {
@@ -58,7 +65,9 @@
                     <a href="#" class="forgot-link">Forgot password?</a>
                 </div>
             <button type="button" class="btn-primary btn-full" onclick="window.location.href='/payment-gate.html'" style="cursor: pointer;">🔒 Pay to unlock ($100/month)</button>                <div id="loginError" class="error-message"></div>
-            </form>
+            
+        </form>
+
       <!-- Sign Up Form -->
 <form id="signupForm" class="auth-form" style="display:none">
     <div class="form-group">
@@ -77,6 +86,6 @@
         <label for="confirmPassword">Confirm Password</label>
         <input type="password" id="confirmPassword" placeholder="Confirm password" required>
     </div>
-    <button type="button" class="btn-primary btn-full">🔒 Pay to unlock ($100/month)</button>
+    <button type="button" class="btn-primary btn-full" onclick="window.location.href='/payment-gate.html'" style="cursor: pointer;">🔒 Pay to unlock ($100/month)</button>
     <div id="signupError"></div>
 </form>

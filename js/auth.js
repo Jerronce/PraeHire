@@ -2,7 +2,43 @@
 import { auth } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-const ADMIN_EMAIL = 'jerronce101@gmail.com';
+// Only your admin email is allowed full access immediately
+const ADMIN_EMAIL = "Jerronce101@gmail.com";
+
+function handleGoogleSignIn() {
+  // Example using Firebase Auth—adjust for your auth provider if different!
+  firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    .then((result) => {
+      const userEmail = result.user.email;
+      if (userEmail === ADMIN_EMAIL) {
+        // Admin: Direct to admin dashboard
+        window.location.href = "dashboard.html";
+      } else {
+        // Check if user is paid (implement your paid-user check)
+        checkIfPaidUser(userEmail).then((isPaid) => {
+          if (isPaid) {
+            // Non-admin paid user: Allow access
+            window.location.href = "dashboard.html";
+          } else {
+            // Non-paid user: Redirect to payment gateway
+            window.location.href = "payment-gate.html";
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      alert("Sign in failed: " + error.message);
+    });
+}
+
+// Mock/payment check function: Replace with your backend/database logic!
+async function checkIfPaidUser(email) {
+    // For demo: return false always; you must link this to your actual database/payment check!
+    // Example: fetch('/api/check-paid?email=' + encodeURIComponent(email))
+    //            .then(r => r.json()).then(data => data.isPaid);
+    return false;
+}
+
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
