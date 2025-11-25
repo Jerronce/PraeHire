@@ -86,20 +86,6 @@
         </div>
     </div>
     <!-- Firebase SDKs -->
-    <script type="module">
-        // Firebase configuration will be loaded from firebase-config.js
-        import { auth } from './js/firebase-config.js';
-        import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        
-        // Make auth functions available globally
-        window.firebaseAuth = {
-            signIn: signInWithEmailAndPassword,
-            signUp: createUserWithEmailAndPassword,
-            googleSignIn: signInWithPopup,
-            GoogleProvider: GoogleAuthProvider,
-            auth: auth
-        };
-    </script>
     <script type="module" src="js/auth.js"></script>
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     <script src="js/force-enable-payment.js"></script>
