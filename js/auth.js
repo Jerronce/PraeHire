@@ -1,4 +1,5 @@
 // Auth page interactions
+document.addEventListener('DOMContentLoaded', () => {
 import { auth } from './firebase-config.js';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
@@ -86,7 +87,7 @@ if (googleBtn) {
   googleBtn.addEventListener('click', async () => {
     try {
       const provider = new GoogleAuthProvider();
-      const const result = await signInWithPopup(auth, provider);
+       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       
       // ADMIN LOCKDOWN: Only Jerronce101@gmail.com is allowed
@@ -103,4 +104,5 @@ if (googleBtn) {
       alert(err.message);
     }
   });
-}
+
+});}
