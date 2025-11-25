@@ -7,12 +7,19 @@ const ADMIN_EMAIL = 'jerronce101@gmail.com';
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 PraeHire Auth Initialized');
-    
+        
     // Get all DOM elements
     const loginTab = document.getElementById('loginTab');
     const signupTab = document.getElementById('signupTab');
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
+        console.log('🔍 DEBUG: Checking elements...');
+    console.log('loginTab:', loginTab);
+    console.log('signupTab:', signupTab);
+    console.log('loginForm:', loginForm);
+    console.log('signupForm:', signupForm);
+    
+
     const googleBtn = document.getElementById('googleSignIn');
     const forgotPasswordLink = document.querySelector('.forgot-link');
     
