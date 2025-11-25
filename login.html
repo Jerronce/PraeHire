@@ -23,8 +23,23 @@
             </div>
             <div class="auth-tabs">
                 <button class="tab-btn active" id="loginTab">Login</button>
- onclick="document.getElementById('loginForm').style.display='block';document.getElementById('signupForm').style.display='none';this.classList.add('active');document.getElementById('signupTab').classList.remove('active');"                <button class="tab-btn" id="signupTab" onclick="document.getElementById('signupForm').style.display='block';document.getElementById('loginForm').style.display='none';this.classList.add('active');document.getElementById('loginTab').classList.remove('active');">Sign Up</button>
+                <button class="tab-btn" id="signupTab">Sign Up</button>
             </div>
+                    <script>
+            // Simple tab switching
+            document.getElementById('loginTab').onclick = function() {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('signupForm').style.display = 'none';
+                this.classList.add('active');
+                document.getElementById('signupTab').classList.remove('active');
+            };
+            document.getElementById('signupTab').onclick = function() {
+                document.getElementById('signupForm').style.display = 'block';
+                document.getElementById('loginForm').style.display = 'none';
+                this.classList.add('active');
+                document.getElementById('loginTab').classList.remove('active');
+            };
+        </script>
             <!-- Login Form -->
             <form id="loginForm" class="auth-form">
                 <div class="form-group">
