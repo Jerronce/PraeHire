@@ -1,0 +1,5 @@
+[33m6e048fa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix Google Sign-In syntax error: change await const to const await
+[33m342e777[m Update Google Sign-In to redirect non-admin users to payment page instead of blocking them
+[33mc0de8fe[m SECURITY: Restrict authentication to admin email only (Jerronce101@gmail.com)
+[33m9c2e7ad[m Add analyzeResume Cloud Function for comprehensive resume analysis
+[33mb22865a[m Fix: Restore resume.html with job description field and AI optimization
