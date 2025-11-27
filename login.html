@@ -1,91 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PraeHire</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - PraeHire</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-    
 <body>
-    <div class="auth-container">
-        <div class="auth-box">
-            <div class="auth-header">
-                <div class="logo">
-                    <span class="logo-icon">🎯</span>
-                    <span class="logo-text">PraeHire</span>
-                </div>
-                <h1>Welcome</h1>
-                <p>Sign in to continue your job search</p>
-            </div>
-            <div class="auth-tabs">
-                <button class="tab-btn active" id="loginTab">Login</button>
-                <button class="tab-btn" id="signupTab">Sign Up</button>
-            </div>
-            <div class="google-signin-button">
-  <button type="button" onclick="handleGoogleSignIn()">Sign In with Google</button>
-</div>
-<div class="back-to-home">
-  <a href="index.html"><button type="button">Back to Home</button></a>
-</div>
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-header">
+        <div class="logo">
+          <span class="logo-icon">🎯</span>
+          <span class="logo-text">PraeHire</span>
+        </div>
+        <h1>Welcome</h1>
+        <p>Sign in to continue your job search</p>
+      </div>
 
-                    <script>
-            // Simple tab switching
-            document.getElementById('loginTab').onclick = function() {
-                document.getElementById('loginForm').style.display = 'block';
-                document.getElementById('signupForm').style.display = 'none';
-                this.classList.add('active');
-                document.getElementById('signupTab').classList.remove('active');
-            };
-            document.getElementById('signupTab').onclick = function() {
-                document.getElementById('signupForm').style.display = 'block';
-                document.getElementById('loginForm').style.display = 'none';
-                this.classList.add('active');
-                document.getElementById('loginTab').classList.remove('active');
-            };
-        </script>
-            <!-- Login Form -->
-            <form id="loginForm" class="auth-form">
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" placeholder="your@email.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
-                </div>
-                <div class="form-options">
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="rememberMe">
-                        Remember me
-                    </label>
-                    <a href="#" class="forgot-link">Forgot password?</a>
-                </div>
-            <button type="button" class="btn-primary btn-full" onclick="window.location.href='/payment-gate.html'" style="cursor: pointer;">🔒 Pay to unlock ($100/month)</button>                <div id="loginError" class="error-message"></div>
-            
-        </form>
+      <div class="auth-tabs">
+        <button class="tab-btn active" id="loginTab" type="button">Login</button>
+        <button class="tab-btn" id="signupTab" type="button">Sign Up</button>
+      </div>
 
-      <!-- Sign Up Form -->
-<form id="signupForm" class="auth-form" style="display:none">
-    <div class="form-group">
-        <label for="signupName">Full Name</label>
-        <input type="text" id="signupName" placeholder="John Doe" required>
+      <div class="google-signin-button">
+        <button type="button" class="btn-google btn-full" onclick="handleGoogleSignIn()">
+          Continue with Google
+        </button>
+      </div>
+
+      <div class="back-to-home">
+        <a href="index.html" class="btn-outline">Back to Home</a>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe">
+            Remember me
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="button" class="btn-primary btn-full btn-large" onclick="window.location.href='payment-gate.html'">
+          🔒 Pay to unlock ($100/month)
+        </button>
+
+        <div id="loginError" class="error-message"></div>
+      </form>
+
+      <form id="signupForm" class="auth-form" style="display: none;">
+        <div class="form-group">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" placeholder="John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupEmail">Email</label>
+          <input type="email" id="signupEmail" placeholder="your@email.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="signupPassword">Password</label>
+          <input type="password" id="signupPassword" placeholder="Enter your password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+        </div>
+
+        <button type="button" class="btn-primary btn-full btn-large" onclick="window.location.href='payment-gate.html'">
+          🔒 Pay to unlock ($100/month)
+        </button>
+
+        <div id="signupError" class="error-message"></div>
+      </form>
     </div>
-    <div class="form-group">
-        <label for="signupEmail">Email</label>
-        <input type="email" id="signupEmail" placeholder="your@email.com" required>
-    </div>
-    <div class="form-group">
-        <label for="signupPassword">Password</label>
-        <input type="password" id="signupPassword" placeholder="Enter your password" required>
-    </div>
-    <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" placeholder="Confirm password" required>
-    </div>
-    <button type="button" class="btn-primary btn-full" onclick="window.location.href='/payment-gate.html'" style="cursor: pointer;">🔒 Pay to unlock ($100/month)</button>
-    <div id="signupError"></div>
-</form>
+  </div>
+
+  <script>
+    const loginTab = document.getElementById('loginTab');
+    const signupTab = document.getElementById('signupTab');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    loginTab.addEventListener('click', function () {
+      loginForm.style.display = 'block';
+      signupForm.style.display = 'none';
+      loginTab.classList.add('active');
+      signupTab.classList.remove('active');
+    });
+
+    signupTab.addEventListener('click', function () {
+      signupForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      signupTab.classList.add('active');
+      loginTab.classList.remove('active');
+    });
+  </script>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
