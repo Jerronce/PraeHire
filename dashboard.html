@@ -11,6 +11,7 @@
 </head>
 <body>
   <div class="app">
+    <!-- Desktop sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo">
@@ -30,6 +31,28 @@
       </div>
     </aside>
 
+    <!-- Mobile top bar -->
+    <header class="mobile-topbar">
+      <div class="mobile-left">
+        <div class="logo">
+          <span class="logo-icon">🎯</span>
+          <span class="logo-text">PraeHire</span>
+        </div>
+      </div>
+      <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Open menu">
+        ☰
+      </button>
+    </header>
+
+    <!-- Mobile slide-down menu -->
+    <nav class="mobile-menu" id="mobileMenu">
+      <button class="mobile-menu-item active" data-tab="resume">🧾 Resume Tailor</button>
+      <button class="mobile-menu-item" data-tab="apply">💼 Auto Apply</button>
+      <button class="mobile-menu-item" data-tab="interview">🎙 Interview Practice</button>
+      <button class="mobile-menu-item danger" id="mobileLogout">Logout</button>
+    </nav>
+
+    <!-- Main content -->
     <main class="content">
       <header class="topbar">
         <div class="topbar-left">
@@ -141,31 +164,74 @@ https://careers.example.com/role-2"></textarea>
   <!-- PDF.js library for PDF parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <!-- Logout + fallback redirect -->
+  <!-- Tabs, mobile menu, logout -->
   <script>
-    const logoutBtn = document.getElementById('logoutBtn');
+    // Tab switching shared by sidebar + mobile menu
+    const tabs = document.querySelectorAll('.tab');
+    const sidebarNavItems = document.querySelectorAll('.sidebar-nav .nav-item');
+    const mobileMenuItems = document.querySelectorAll('.mobile-menu-item[data-tab]');
 
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', function () {
-        // Clear any stored user state
-        localStorage.removeItem('praehireUser');
-        sessionStorage.removeItem('praehireUser');
+    function activateTab(tabName) {
+      tabs.forEach(t => {
+        t.classList.toggle('active', t.id === 'tab-' + tabName);
+      });
 
-        // If Firebase Auth is exposed globally, sign out then redirect
-        if (window.firebaseAuth && typeof window.firebaseAuth.signOut === 'function') {
-          window.firebaseAuth.signOut()
-            .then(function () {
-              window.location.href = 'login.html';
-            })
-            .catch(function () {
-              window.location.href = 'login.html';
-            });
-        } else {
-          // Fallback: always go back to login page
-          window.location.href = 'login.html';
-        }
+      sidebarNavItems.forEach(i => {
+        i.classList.toggle('active', i.dataset.tab === tabName);
+      });
+
+      mobileMenuItems.forEach(i => {
+        i.classList.toggle('active', i.dataset.tab === tabName);
       });
     }
+
+    sidebarNavItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const tabName = item.dataset.tab;
+        if (tabName) activateTab(tabName);
+      });
+    });
+
+    mobileMenuItems.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabName = btn.dataset.tab;
+        if (tabName) activateTab(tabName);
+        const mobileMenu = document.getElementById('mobileMenu');
+        mobileMenu.classList.remove('open');
+      });
+    });
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    mobileMenuToggle?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Logout for desktop + mobile
+    const logoutBtn = document.getElementById('logoutBtn');
+    const mobileLogout = document.getElementById('mobileLogout');
+
+    function doLogout() {
+      localStorage.removeItem('praehireUser');
+      sessionStorage.removeItem('praehireUser');
+
+      if (window.firebaseAuth && typeof window.firebaseAuth.signOut === 'function') {
+        window.firebaseAuth.signOut()
+          .then(function () {
+            window.location.href = 'login.html';
+          })
+          .catch(function () {
+            window.location.href = 'login.html';
+          });
+      } else {
+        window.location.href = 'login.html';
+      }
+    }
+
+    logoutBtn?.addEventListener('click', doLogout);
+    mobileLogout?.addEventListener('click', doLogout);
   </script>
 </body>
 </html>
