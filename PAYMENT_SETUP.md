@@ -1,11 +1,11 @@
-# Flutterwave Payment Setup - $100 USD Worldwide
+# Flutterwave Payment Setup - $10 USD Worldwide
 
 ## ✅ Payment Configuration Updated
 
-Your PraeHire app is now configured to accept **$100 USD** payments from **anywhere in the world**!
+Your PraeHire app is now configured to accept **$10 USD** payments from **anywhere in the world**!
 
 ### Payment Details:
-- **Amount**: $100 USD (one-time payment)
+- **Amount**: $10 USD (one-time payment)
 - **Currency**: USD (accepts international cards)
 - **Payment Methods**: Credit/Debit cards, Bank transfers, Mobile money, and more
 - **Access**: Lifetime access to all AI features
@@ -70,7 +70,7 @@ firebase deploy
 
 ### For Users:
 1. User tries to use AI feature (Resume Tailor or Interview Practice)
-2. Sees a prompt: "💎 [Feature] is a premium feature. One-time payment: $100 USD"
+2. Sees a prompt: "💎 [Feature] is a premium feature. One-time payment: $10 USD"
 3. Shows benefits:
    - ✅ Lifetime access
    - ✅ Unlimited resume tailoring
