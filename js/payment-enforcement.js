@@ -1,6 +1,6 @@
 // PAYMENT ENFORCEMENT - Clear messaging and Flutterwave integration
 const ADMIN_EMAIL = 'Jerronce101@gmail.com';
-const MONTHLY_PRICE = 100;
+const MONTHLY_PRICE = 10;
 
 function isAdmin(email) {
     return email && email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
