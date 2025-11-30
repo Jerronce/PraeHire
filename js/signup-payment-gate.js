@@ -1,5 +1,5 @@
 // SIGNUP PAYMENT GATE - Users must pay BEFORE creating account
-const MONTHLY_PRICE = 100;
+const MONTHLY_PRICE = 10;
 const ADMIN_EMAIL = 'Jerronce101@gmail.com';
 
 // Show payment requirement on signup page
