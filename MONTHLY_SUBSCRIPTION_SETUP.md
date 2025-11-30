@@ -2,7 +2,7 @@
 
 ## What Changed:
 
-### ✅ 1. Monthly Subscription ($100/month)
+### ✅ 1. Monthly Subscription ($10/month)
 - **NOT lifetime** - Users pay $100 USD every month
 - **Recurring billing** - Must renew after 30 days
 - **Real payments only** - FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X mode, no testing
@@ -53,7 +53,7 @@ const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your FLWPUBK-16a72bd5
 ### For New Users:
 1. Visit praehire.web.app
 2. Click "Get Started"
-3. **PAYMENT SCREEN** shows: "$100/month"
+3. **PAYMENT SCREEN** shows: "$10/month"
 4. User pays via Flutterwave
 5. After payment, they create account
 6. Get 30 days access
@@ -62,7 +62,7 @@ const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your FLWPUBK-16a72bd5
 ### For Existing Users:
 1. Login to account
 2. Try to use AI feature
-3. **PAYMENT PROMPT**: "Subscribe for $100/month"
+3. **PAYMENT PROMPT**: "Subscribe for $10/month"
 4. Pay to continue
 5. Get 30 days access
 
@@ -75,7 +75,7 @@ const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your FLWPUBK-16a72bd5
 
 ## Subscription Details:
 
-- **Price**: $100 USD
+- **Price**: $10 USD
 - **Frequency**: Monthly (every 30 days)
 - **Auto-renew**: NO (manual payment each month)
 - **Currency**: USD (international)
@@ -86,21 +86,21 @@ const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-xxxxxxxxxxxxx'; // Your FLWPUBK-16a72bd5
 ## User Experience:
 
 ### First Month:
-- Pay $100
+- Pay $10
 - Get 30 days access
 - Use all features unlimited
 
 ### After 30 Days:
 - Access blocked
 - Prompt to renew: "Your subscription expired"
-- Pay $100 again
+- Pay $10 again
 - Get another 30 days
 
 ---
 
 ## Revenue Model:
 
-- $100 per user per month
+- $10 per user per month
 - If you get 10 paying users = $1,000/month
 - If you get 100 paying users = $10,000/month
 - If you get 1,000 paying users = $100,000/month
