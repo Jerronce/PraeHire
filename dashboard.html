@@ -155,13 +155,35 @@ https://careers.example.com/role-2"></textarea>
 
   <!-- Main JS modules -->
   <script type="module">
-    import './js/firebase-config.js';
+    import { auth } from './js/firebase-config.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     import './js/dashboard.js';
+
+    const ADMIN_EMAIL = "jerronce101@gmail.com".toLowerCase();
+
+    // Auth guard: protect dashboard route
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const email = (user.email || '').toLowerCase();
+
+      if (email === ADMIN_EMAIL) {
+        return;
+      }
+
+      // TODO: replace with real payment check
+      const isPaid = false;
+      if (!isPaid) {
+        window.location.href = 'payment-gate.html';
+      }
+    });
   </script>
 
   <script src="https://checkout.flutterwave.com/v3.js"></script>
   <script src="./js/dashboard_additions.js"></script>
-  <!-- PDF.js library for PDF parsing -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <!-- Tabs, mobile menu, logout -->
