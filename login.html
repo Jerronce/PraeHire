@@ -27,7 +27,13 @@
       </div>
 
       <div class="google-signin-button">
-        <button type="button"  id= "googleSignIn" class="btn-google btn-full">
+        <!-- Main Google sign-in button -->
+        <button
+          type="button"
+          id="googleSignIn"
+          class="btn-google btn-full"
+          onclick="handleGoogleSignIn()"
+        >
           Continue with Google
         </button>
       </div>
@@ -36,6 +42,7 @@
         <a href="index.html" class="btn-outline">Back to Home</a>
       </div>
 
+      <!-- LOGIN FORM -->
       <form id="loginForm" class="auth-form">
         <div class="form-group">
           <label for="loginEmail">Email</label>
@@ -55,13 +62,19 @@
           <a href="#" class="forgot-link">Forgot password?</a>
         </div>
 
-        <button type="button" class="btn-primary btn-full btn-large" onclick="window.location.href='payment-gate.html'">
+        <!-- Login pay button now also triggers Google Sign-In -->
+        <button
+          type="button"
+          class="btn-primary btn-full btn-large"
+          onclick="handleGoogleSignIn()"
+        >
           🔒 Pay to unlock ($10/month)
         </button>
 
         <div id="loginError" class="error-message"></div>
       </form>
 
+      <!-- SIGNUP FORM -->
       <form id="signupForm" class="auth-form" style="display: none;">
         <div class="form-group">
           <label for="signupName">Full Name</label>
@@ -83,7 +96,12 @@
           <input type="password" id="confirmPassword" placeholder="Confirm password" required>
         </div>
 
-        <button type="button" class="btn-primary btn-full btn-large" onclick="window.location.href='payment-gate.html'">
+        <!-- Signup pay button also triggers the same Google Sign-In -->
+        <button
+          type="button"
+          class="btn-primary btn-full btn-large"
+          onclick="handleGoogleSignIn()"
+        >
           🔒 Pay to unlock ($10/month)
         </button>
 
@@ -113,6 +131,7 @@
     });
   </script>
 
+  <!-- Make sure js/auth.js defines window.handleGoogleSignIn -->
   <script src="js/auth.js"></script>
 </body>
 </html>
