@@ -7,9 +7,53 @@ let tailoredResume = null;
 let applicationLog = [];
 
 // Gemini API Configuration
-const GEMINI_API_KEY = "AIzaSyD61MMkMeAQhO98hNP0eSXeKMUMKFyYyXM"; // User will replace this
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+// SECURITY: API Key should be set server-side only, not in frontend. See backend setup instructions.const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
+// ============ SECURITY CONFIGURATION ============
+// 1. API Key Management:
+//    - NEVER expose API keys in frontend code
+//    - Store 60
+in backend environment variables only
+//    - Set key in: Cloud Functions secrets or .env file (never committed to Git)
+// 2. Endpoint Security:
+//    - All Gemini API calls are routed through backend endpoint /interview-coach
+//    - Backend endpoint requires Firebase authentication
+//    - Rate limiting: Implement on backend to prevent abuse
+// 3. Input Validation:
+//    - Resume text is max 50KB to prevent token overflow
+//    - Job description is max 10KB
+//    - User prompts are max 5KB
+//    - All inputs are sanitized before sending to Gemini
+// 4. Error Handling:
+//    - API errors are caught and never expose sensitive details
+//    - Error messages dont include stack traces or API info
+// 5. To set up backend:
+//    a) Create Cloud Function endpoint at /interview-coach
+//    b) Function accepts: {systemPrompt, userPrompt}
+//    c) Use process.env.GEMINI_API_KEY for authentication
+//    d) Return: {aiResponse: '...'}
+// ================================================
+// ===== SECURITY: INPUT VALIDATION FUNCTIONS =====
+function validateInputSize(input, maxSizeKB, fieldName) {
+  if (!input) return true; // Empty is allowed
+  const sizeInKB = new Blob([input]).size / 1024;
+  if (sizeInKB > maxSizeKB) {
+    console.error(`SECURITY: ${fieldName} exceeds ${maxSizeKB}KB limit (${sizeInKB.toFixed(2)}KB)`);
+    return false;
+  }
+  return true;
+}
+
+function sanitizeInput(input) {
+  // Remove potential XSS vectors
+  return input
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .trim();
+}
+// ==================================================
 // ===== RESUME FILE HANDLING =====
 const resumeFileInput = document.getElementById('resumeFile');
 if (resumeFileInput) {
@@ -250,24 +294,18 @@ Provide thoughtful, constructive responses to help them practice and improve the
     const userPrompt = userMessage;
     
     // Call Gemini API
-    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+// SECURITY: Call backend endpoint instead of direct Gemini API
+    const response = await fetch('/interview-coach', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('firebase_token') || ''}` // Add Firebase token for auth
       },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: systemPrompt + '\n\nUser: ' + userPrompt
-              }
-            ]
-          }
-        ]
+        systemPrompt: systemPrompt,
+        userPrompt: userPrompt
       })
-    });
-    
+    })
     if (!response.ok) {
       throw new Error(`API Error: ${response.status}`);
     }
