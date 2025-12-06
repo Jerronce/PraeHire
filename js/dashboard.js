@@ -7,7 +7,7 @@ let tailoredResume = null;
 let applicationLog = [];
 
 // Gemini API Configuration
-const GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY_HERE'; // User will replace this
+const GEMINI_API_KEY = "AIzaSyD61MMkMeAQhO98hNP0eSXeKMUMKFyYyXM"; // User will replace this
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
 
 // ===== RESUME FILE HANDLING =====
