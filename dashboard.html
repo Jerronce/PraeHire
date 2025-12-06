@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 </head>
 <body>
   <div class="app">
@@ -19,13 +20,11 @@
           <span class="logo-text">PraeHire</span>
         </div>
       </div>
-
       <nav class="sidebar-nav">
         <a class="nav-item active" data-tab="resume">🧾 Resume Tailor</a>
         <a class="nav-item" data-tab="apply">💼 Auto Apply</a>
         <a class="nav-item" data-tab="interview">🎙 Interview Practice</a>
       </nav>
-
       <div class="sidebar-footer">
         <button id="logoutBtn" class="btn-outline btn-full">Logout</button>
       </div>
@@ -39,9 +38,7 @@
           <span class="logo-text">PraeHire</span>
         </div>
       </div>
-      <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Open menu">
-        ☰
-      </button>
+      <button id="mobileMenuToggle" class="mobile-menu-btn" aria-label="Open menu">☰</button>
     </header>
 
     <!-- Mobile slide-down menu -->
@@ -68,7 +65,7 @@
         </div>
       </div>
 
-      <!-- Resume Tailor -->
+      <!-- Resume Tailor Tab -->
       <section id="tab-resume" class="tab active">
         <h2>Resume Tailor</h2>
         <div class="card-grid">
@@ -78,82 +75,62 @@
               <input type="file" id="resumeFile" accept=".pdf,.doc,.docx,.txt">
             </div>
           </div>
-
           <div class="card">
             <h3>Job Description</h3>
-            <textarea
-              id="jobDescInput"
-              class="textarea"
-              placeholder="Paste the job description here..."></textarea>
-            <button id="tailorResumeBtn" class="btn-primary">
-              Tailor Resume with AI
-            </button>
+            <textarea id="jobDescInput" class="textarea" placeholder="Paste the job description here..."></textarea>
           </div>
         </div>
-
-        <div class="card">
+        <button id="tailorResumeBtn" class="btn-primary">Tailor Resume with AI</button>
+        <div class="card" style="margin-top: 20px;">
           <h3>Optimized Resume</h3>
-          <textarea
-            id="optimizedResume"
-            class="textarea"
-            placeholder="Your AI-optimized resume will appear here..."></textarea>
-          <div class="row">
-            <button id="saveOptimizedResume" class="btn-secondary">
-              Save to Firestore
-            </button>
-            <button id="copyOptimizedResume" class="btn-outline">
-              Copy
-            </button>
+          <textarea id="optimizedResume" class="textarea" placeholder="Your AI-optimized resume will appear here..."></textarea>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="saveResumeBtn" class="btn-secondary">Save to Firestore</button>
+            <button id="copyResumeBtn" class="btn-secondary">Copy</button>
           </div>
         </div>
       </section>
 
-      <!-- Auto Apply -->
+      <!-- Auto Apply Tab -->
       <section id="tab-apply" class="tab">
         <h2>Auto Apply</h2>
         <div class="card">
-          <label for="jobLinks">Paste job links (one per line)</label>
-          <textarea
-            id="jobLinks"
-            class="textarea"
-            placeholder="https://jobs.example.com/role-1
+          <h3>Job Links</h3>
+          <textarea id="jobLinks" class="textarea" placeholder="Paste job links (one per line):
+https://jobs.example.com/role-1
 https://careers.example.com/role-2"></textarea>
-          <div class="row">
-            <button id="simulateApply" class="btn-primary">
-              Simulate Auto Apply
-            </button>
-            <button id="saveApplications" class="btn-secondary">
-              Save Session
-            </button>
+          <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button id="autoApplyBtn" class="btn-primary">Simulate Auto Apply</button>
+            <button id="saveSessionBtn" class="btn-secondary">Save Session</button>
           </div>
         </div>
-
-        <div class="card">
+        <div class="card" style="margin-top: 20px;">
           <h3>Application Log</h3>
-          <div id="applyLog" class="log"></div>
+          <div id="applicationLog" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 5px; background: #fafafa;">
+            <p style="color: #999;">Applications will appear here...</p>
+          </div>
         </div>
       </section>
 
-      <!-- Interview Practice -->
+      <!-- Interview Practice Tab -->
       <section id="tab-interview" class="tab">
         <h2>Interview Practice</h2>
-        <div class="chat">
-          <div id="chatWindow" class="chat-window"></div>
-          <div class="chat-input-row">
-            <input
-              id="chatInput"
-              type="text"
-              placeholder="Ask an interview question...">
-            <button id="sendChat" class="btn-primary">
-              Send
-            </button>
+        <div class="card">
+          <h3>AI Interview Coach</h3>
+          <p style="color: #666; margin-bottom: 15px;">Get real-time interview feedback powered by Gemini AI. Make sure your resume is uploaded first!</p>
+          <div id="chatWindow" style="max-height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; border-radius: 5px; background: #fafafa; margin-bottom: 15px;">
+            <p style="color: #999;"><em>Chat will appear here...</em></p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <input type="text" id="chatInput" class="textarea" placeholder="Ask an interview question..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+            <button id="sendChat" class="btn-primary">Send</button>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- Main JS modules -->
+  <!-- Authentication & Dashboard Scripts -->
   <script type="module">
     import { auth } from './js/firebase-config.js';
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
@@ -169,7 +146,6 @@ https://careers.example.com/role-2"></textarea>
       }
 
       const email = (user.email || '').toLowerCase();
-
       if (email === ADMIN_EMAIL) {
         return;
       }
@@ -182,11 +158,7 @@ https://careers.example.com/role-2"></textarea>
     });
   </script>
 
-  <script src="https://checkout.flutterwave.com/v3.js"></script>
-  <script src="./js/dashboard_additions.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-
-  <!-- Tabs, mobile menu, logout -->
+  <!-- Tab Navigation Script -->
   <script>
     // Tab switching shared by sidebar + mobile menu
     const tabs = document.querySelectorAll('.tab');
@@ -197,11 +169,9 @@ https://careers.example.com/role-2"></textarea>
       tabs.forEach(t => {
         t.classList.toggle('active', t.id === 'tab-' + tabName);
       });
-
       sidebarNavItems.forEach(i => {
         i.classList.toggle('active', i.dataset.tab === tabName);
       });
-
       mobileMenuItems.forEach(i => {
         i.classList.toggle('active', i.dataset.tab === tabName);
       });
@@ -226,7 +196,6 @@ https://careers.example.com/role-2"></textarea>
     // Mobile menu toggle
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     const mobileMenu = document.getElementById('mobileMenu');
-
     mobileMenuToggle?.addEventListener('click', () => {
       mobileMenu.classList.toggle('open');
     });
@@ -238,7 +207,6 @@ https://careers.example.com/role-2"></textarea>
     function doLogout() {
       localStorage.removeItem('praehireUser');
       sessionStorage.removeItem('praehireUser');
-
       if (window.firebaseAuth && typeof window.firebaseAuth.signOut === 'function') {
         window.firebaseAuth.signOut()
           .then(function () {
