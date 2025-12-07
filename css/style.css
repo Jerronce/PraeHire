@@ -15,11 +15,11 @@
   box-sizing: border-box;
 }
 
-/* Logo size */
 .logo-icon .logo-img {
+  max-height: 52px;      /* desktop size inside 64px navbar */
   width: auto;
-  height: 40px;        /* tweak 36–44px if you want */
   vertical-align: middle;
+  display: inline-block;
 }
 
 /* Base */
@@ -237,7 +237,11 @@ a {
 }
 
 @media (max-width: 768px) {
-  /* Stack sidebar on top, content below */
+  .logo-icon .logo-img {
+    max-height: 36px;    /* smaller on phones */
+  }
+}
+
   .app {
     flex-direction: column;
   }
