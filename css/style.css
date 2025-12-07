@@ -392,6 +392,10 @@ body.light-mode .footer, body.light-mode .feature-card, body.light-mode .step {
   color: var(--muted);
   border-radius: 6px;
   transition: background 0.2s ease, color 0.2s ease;
+  /* Use flex/inline-flex to center content inside the tabs if they contain icons/text */
+  display: inline-flex; 
+  justify-content: center;
+  align-items: center;
 }
 
 .auth-tab.active {
@@ -400,56 +404,7 @@ body.light-mode .footer, body.light-mode .feature-card, body.light-mode .step {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Form Inputs */
-.auth-form-group {
-  margin-bottom: 16px;
-}
-
-.auth-form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: var(--muted);
-}
-
-.auth-input {
-  width: 100%;
-  padding: 12px;
-  background: #142042;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-size: 16px;
-  transition: border-color 0.2s ease;
-}
-
-.auth-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-/* Checkbox/Forgot Password Row */
-.auth-row-options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.auth-remember-me {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--muted);
-}
-
-/* Payment/Unlock Button */
-.auth-pay-button {
-  margin-top: 24px;
-}
-
-/* Links and Separators */
+/* Links and Separators (Styling the 'Back to Home' Link) */
 .auth-separator {
   text-align: center;
   margin: 20px 0;
@@ -474,4 +429,57 @@ body.light-mode .footer, body.light-mode .feature-card, body.light-mode .step {
   display: block;
   text-align: center;
   margin-top: 10px;
+}
+
+/* Form Inputs and Fields (FIXED) */
+.auth-form-group {
+  margin-bottom: 16px;
+}
+
+.auth-form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.auth-input {
+  width: 100%;
+  padding: 12px;
+  background: #142042;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+  /* Ensure browser defaults are overridden for inputs */
+  appearance: none; 
+  -webkit-appearance: none;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+
+/* Checkbox/Forgot Password Row */
+.auth-row-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.auth-remember-me {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+
+/* Payment/Unlock Button */
+.auth-pay-button {
+  margin-top: 24px;
 }
