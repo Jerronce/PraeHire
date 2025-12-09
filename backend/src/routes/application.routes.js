@@ -1,6 +1,10 @@
 // backend/src/routes/application.routes.js
 import express from 'express';
-import Application from '../models/Application.js';
+
+// FIX: Ensure correct relative path (../) and file extension (.js) for local modules
+import Application from '../models/Application.js'; 
+
+// FIX: Ensure correct relative path (../) and file extension (.js) for middleware
 import { protect } from '../middleware/authMiddleware.js';
 import roleMiddleware from '../middleware/roleMiddleware.js';
 
