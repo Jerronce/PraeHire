@@ -1,52 +1,45 @@
-// backend/src/server.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth.routes');
+const aiRoutes = require('./routes/ai.routes');
+const jobRoutes = require('./routes/job.routes');
+const applicationRoutes = require('./routes/application.routes');
+const authMiddleware = require('./middleware/authMiddleware');
 
-// 1. Module Imports
-import dotenv from 'dotenv';
-import express from 'express';
-import cors from 'cors';
-
-// Import local files
-import connectDB from './config/db.js'; 
-import authRoutes from './routes/auth.routes.js';
-import jobRoutes from './routes/job.routes.js'; // Existing: Job Routes
-import applicationRoutes from './routes/application.routes.js'; // NEW: Application Routes
-import { protect } from './middleware/authMiddleware.js'; 
-
-// Load environment variables from .env file
-// FIX: Specify the path because .env is inside the src directory
-dotenv.config({ path: './src/.env' }); 
-
-// 2. Initialize App and Middleware
 const app = express();
 
-// Middleware setup
-app.use(cors()); // Enable CORS
-app.use(express.json()); // Allows parsing of JSON request bodies
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-// 3. Connect to Database
-connectDB(); 
+// Database
+connectDB();
 
-// 4. Define Routes
-
-// Root Route
-app.get("/", (req, res) => {
-    res.json({ message: "PraeHire backend is running" });
+// Routes
+app.get('/', (req, res) => {
+  res.json({ message: 'PraeHire Backend is running' });
 });
 
-// Authentication Routes (e.g., /api/auth/register, /api/auth/login)
-app.use("/api/auth", authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/ai', authMiddleware, aiRoutes);
+app.use('/api/jobs', authMiddleware, jobRoutes);
+app.use('/api/applications', authMiddleware, applicationRoutes);
 
-// Job Routes (e.g., /api/jobs, /api/jobs/:id)
-app.use("/api/jobs", jobRoutes); 
-
-// Application Routes (e.g., /api/applications, /api/applications/:jobId)
-app.use("/api/applications", applicationRoutes); // NEW: Register Application Routes
-
-// Protected Route Example (Get Current User Info)
-app.get("/api/me", protect, (req, res) => {
-    res.json({ user: req.user });
+// Protected route example
+app.get('/api/me', authMiddleware, (req, res) => {
+  res.json({ user: req.user });
 });
 
-// 5. Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ message: 'Server error', error: err.message });
+});
+
+// Start server
+const port = process.env.PORT || 5000;
+app.listen(port, () => console.log(`Server listening on port ${port}`));
+
+module.exports = app;
