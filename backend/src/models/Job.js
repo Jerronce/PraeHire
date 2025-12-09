@@ -11,7 +11,7 @@ const JobSchema = new mongoose.Schema({
     // Link the job to the Recruiter who created it
     postedBy: { 
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // References the User model (Recruiter)
+        ref: 'User', // References the User model
         required: true 
     },
     
