@@ -5,8 +5,9 @@
     "node": "20"
   },
   "dependencies": {
-    "firebase-functions": "^4.4.1",
     "firebase-admin": "^11.10.1",
-    "node-fetch": "^2.6.12"
+    "firebase-functions": "^4.4.1",
+    "node-fetch": "^2.6.12",
+    "openai": "^6.13.0"
   }
 }

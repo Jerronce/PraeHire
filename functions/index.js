@@ -1,12 +1,21 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
-const {defineSecret} = require('firebase-functions/params');
+const {defineSecret} = require("firebase-functions/params");
+const OpenAI = require("openai");
 
-// Define the secret for the Gemini API key
-const geminiApiKey = defineSecret('GEMINI_API_KEY');
+// Define the secret for the OpenAI API
+const openaiApiKey = defineSecret("OPENAI_API_KEY");
 
+// Helper function to initialize OpenAI client
+function getOpenAIClient(apiKey) {
+  return new OpenAI({
+    apiKey: apiKey,
+  });
+}
+
+// Tailor Resume Function
 exports.tailorResume = onRequest(
-  {cors: true, secrets: [geminiApiKey]},
+  {cors: true, secrets: [openaiApiKey]},
   async (req, res) => {
     // Only allow POST requests
     if (req.method !== 'POST') {
@@ -20,212 +29,112 @@ exports.tailorResume = onRequest(
     }
 
     try {
-      const apiKey = geminiApiKey.value();
-      
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `You are a professional resume writer. Tailor this resume to match the job description.\n\nResume:\n${resumeText}\n\nJob Description:\n${jobDescription}\n\nProvide an optimized, professional resume tailored for this role.`
-              }]
-            }]
-          })
-        }
-      );
+      const openai = getOpenAIClient(openaiApiKey.value());
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        logger.error('Gemini API error:', errorData);
-        return res.status(response.status).json({
-          error: errorData.error?.message || 'API request failed'
-        });
-      }
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume writer. Tailor the provided resume to match the job description while maintaining accuracy and professionalism."
+          },
+          {
+            role: "user",
+            content: `Job Description:\n${jobDescription}\n\nResume:\n${resumeText}\n\nPlease tailor this resume to match the job description. Keep the format professional and highlight relevant skills and experience.`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000,
+      });
 
-      const data = await response.json();
-      const tailoredText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated';
-      
-      res.json({tailoredResume: tailoredText});
+      const tailoredResume = completion.choices[0].message.content;
+      res.json({tailoredResume});
     } catch (error) {
-      logger.error('Error in tailorResume function:', error);
-      res.status(500).json({error: 'Internal server error'});
+      logger.error('Error in tailorResume:', error);
+      res.status(500).json({error: 'Failed to tailor resume'});
     }
   }
 );
 
 // Interview Chat Function
-exports.interviewChat = onRequest(
-  {cors: true, secrets: [geminiApiKey]},
+exports.interviewchat = onRequest(
+  {cors: true, secrets: [openaiApiKey]},
   async (req, res) => {
-    // Only allow POST requests
     if (req.method !== 'POST') {
       return res.status(405).json({error: 'Method not allowed'});
     }
 
-    const {message} = req.body;
+    const {message, conversationHistory, interviewType, difficulty} = req.body;
 
     if (!message) {
-      return res.status(400).json({error: 'Missing message'});
+      return res.status(400).json({error: 'Message is required'});
     }
 
     try {
-      const apiKey = geminiApiKey.value();
+      const openai = getOpenAIClient(openaiApiKey.value());
 
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: `You are an AI interview assistant for PraeHire. Help users prepare for interviews by asking relevant interview questions and providing feedback. User message: ${message}`
-              }]
-            }]
-          })
-        }
-      );
+      const systemPrompt = `You are an experienced interview coach conducting a ${interviewType || 'technical'} interview at ${difficulty || 'beginner'} level. Ask relevant questions, provide feedback, and help the candidate improve their interview skills. Be professional, encouraging, and provide constructive feedback.`;
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        logger.error('Gemini API error:', errorData);
-        return res.status(response.status).json({
-          error: errorData.error?.message || 'API request failed'
-        });
-      }
+      const messages = [
+        {role: "system", content: systemPrompt},
+        ...(conversationHistory || []),
+        {role: "user", content: message}
+      ];
 
-      const data = await response.json();
-      const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: messages,
+        temperature: 0.8,
+        max_tokens: 500,
+      });
 
-      if (!aiResponse) {
-        throw new Error('No response from AI');
-      }
-
-      res.json({response: aiResponse});
+      const reply = completion.choices[0].message.content;
+      res.json({reply});
     } catch (error) {
-      logger.error('Error in interviewChat function:', error);
-      res.status(500).json({error: 'Internal server error'});
+      logger.error('Error in interviewchat:', error);
+      res.status(500).json({error: 'Failed to process interview chat'});
     }
   }
 );
 
-// Resume Analysis Function - Analyzes resume and provides comprehensive feedback
+// Analyze Resume Function
 exports.analyzeResume = onRequest(
-  {cors: true, secrets: [geminiApiKey]},
+  {cors: true, secrets: [openaiApiKey]},
   async (req, res) => {
-    // Only allow POST requests
     if (req.method !== 'POST') {
       return res.status(405).json({error: 'Method not allowed'});
     }
 
-    const {resumeText, jobDescription} = req.body;
+    const {resumeText} = req.body;
 
     if (!resumeText) {
-      return res.status(400).json({error: 'Missing resume text'});
+      return res.status(400).json({error: 'Resume text is required'});
     }
 
     try {
-      const apiKey = geminiApiKey.value();
-      
-      // Create comprehensive prompt for resume analysis
-      let analysisPrompt = `You are a professional resume analyst and career advisor. Analyze the following resume and provide detailed feedback in JSON format.
+      const openai = getOpenAIClient(openaiApiKey.value());
 
-Resume:
-${resumeText}
-`;
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert resume reviewer. Analyze the resume and provide detailed feedback on strengths, weaknesses, and suggestions for improvement."
+          },
+          {
+            role: "user",
+            content: `Please analyze this resume and provide constructive feedback:\n\n${resumeText}`
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1500,
+      });
 
-      if (jobDescription && jobDescription.trim()) {
-        analysisPrompt += `\nJob Description:
-${jobDescription}
-
-Please tailor the analysis and optimization for this specific job.
-`;
-      }
-
-      analysisPrompt += `
-Provide your response in the following JSON format:
-{
-  "score": <number 0-100>,
-  "strengths": ["strength 1", "strength 2", ...],
-  "improvements": ["improvement 1", "improvement 2", ...],
-  "recommendations": "detailed recommendations text",
-  "keywords": ["keyword1", "keyword2", ...],
-  "optimizedResume": "full optimized resume text tailored for the job"
-}
-
-For the optimizedResume field, provide a complete, professionally formatted resume that is optimized for the job description (if provided) or improved based on best practices. Make it ATS-friendly and highlight relevant skills and achievements.`;
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: analysisPrompt
-              }]
-            }]
-          })
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        logger.error('Gemini API error:', errorData);
-        return res.status(response.status).json({
-          error: errorData.error?.message || 'API request failed'
-        });
-      }
-
-      const data = await response.json();
-      const aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (!aiResponse) {
-        throw new Error('No response from AI');
-      }
-
-      // Try to parse JSON from the response
-      // The AI might return markdown code blocks, so we need to extract the JSON
-      let jsonMatch = aiResponse.match(/```json\s*([\s\S]*?)```/);
-      if (!jsonMatch) {
-        jsonMatch = aiResponse.match(/```\s*([\s\S]*?)```/);
-      }
-      
-      let analysisData;
-      try {
-        const jsonStr = jsonMatch ? jsonMatch[1].trim() : aiResponse.trim();
-        analysisData = JSON.parse(jsonStr);
-      } catch (parseError) {
-        logger.error('Failed to parse AI response as JSON:', parseError);
-        // Return a fallback response
-        analysisData = {
-          score: 75,
-          strengths: ['Professional formatting', 'Clear structure'],
-          improvements: ['Add more quantifiable achievements', 'Include keywords from job description'],
-          recommendations: aiResponse,
-          keywords: [],
-          optimizedResume: 'Unable to generate optimized resume. Please try again.'
-        };
-      }
-
-      // Ensure all required fields exist
-      const result = {
-        score: analysisData.score || 75,
-        strengths: analysisData.strengths || [],
-        improvements: analysisData.improvements || [],
-        recommendations: analysisData.recommendations || 'No specific recommendations.',
-        keywords: analysisData.keywords || [],
-        optimizedResume: analysisData.optimizedResume || resumeText
-      };
-
-      res.json(result);
+      const analysis = completion.choices[0].message.content;
+      res.json({analysis});
     } catch (error) {
-      logger.error('Error in analyzeResume function:', error);
-      res.status(500).json({error: 'Internal server error: ' + error.message});
+      logger.error('Error in analyzeResume:', error);
+      res.status(500).json({error: 'Failed to analyze resume'});
     }
   }
 );
