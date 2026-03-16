@@ -1,67 +1,58 @@
-<script type="module">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PraeHire Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <main class="content">
+      <div id="userGreeting" class="greeting">Hello! 👋</div>
+      
+      <section id="tab-resume" class="tab active">
+        <h2>Resume Tailor</h2>
+        <input type="file" id="resumeFile" accept=".pdf">
+        <textarea id="jobDescInput" placeholder="Paste Job Description"></textarea>
+        <button id="tailorResumeBtn" class="btn-primary">Tailor Resume with AI</button>
+        <textarea id="optimizedResume" placeholder="Result here..."></textarea>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
     import { auth } from './js/firebase-config.js';
-    import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     
-    // 1. Load your AI logic (Tailor CV, Interview Coach)
-    // Ensure this file is at the root as seen in your 'ls' command
-    import './dashboard_new.js'; 
-
-    const ADMIN_EMAIL = "jerronce101@gmail.com".toLowerCase();
-
-    // Auth guard
+    // Auth Guard
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'login.html';
       } else {
-        console.log("CTO Authenticated:", user.email);
-        document.getElementById('userGreeting').innerText = `Hello, ${user.email.split('@')[0]}! 👋`;
+        console.log("Logged in:", user.email);
       }
     });
 
-    // 2. Global Logout Function (Fixed Scope)
-    window.doLogout = async function() {
-      try {
-        await signOut(auth);
-        window.location.href = 'login.html';
-      } catch (error) {
-        console.error("Logout error:", error);
-        window.location.href = 'login.html';
-      }
-    };
+    // Load the Brain Logic
+    import('./dashboard_new.js').then(() => {
+      console.log("AI Logic connected successfully.");
+    }).catch(err => {
+      console.error("Path error: dashboard_new.js not found at root.");
+    });
   </script>
 
   <script>
     // Tab switching logic
     const tabs = document.querySelectorAll('.tab');
-    const sidebarNavItems = document.querySelectorAll('.sidebar-nav .nav-item');
-    const mobileMenuItems = document.querySelectorAll('.mobile-menu-item[data-tab]');
+    const navItems = document.querySelectorAll('.nav-item, .mobile-menu-item');
 
-    function activateTab(tabName) {
-      tabs.forEach(t => t.classList.toggle('active', t.id === 'tab-' + tabName));
-      sidebarNavItems.forEach(i => i.classList.toggle('active', i.dataset.tab === tabName));
-      mobileMenuItems.forEach(i => i.classList.toggle('active', i.dataset.tab === tabName));
-    }
-
-    sidebarNavItems.forEach(item => {
-      item.addEventListener('click', () => activateTab(item.dataset.tab));
-    });
-
-    mobileMenuItems.forEach(btn => {
-      btn.addEventListener('click', () => {
-        activateTab(btn.dataset.tab);
-        document.getElementById('mobileMenu').classList.remove('open');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.dataset.tab;
+        tabs.forEach(t => t.classList.toggle('active', t.id === 'tab-' + target));
       });
-    });
-
-    // Mobile menu toggle
-    document.getElementById('mobileMenuToggle')?.addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.toggle('open');
-    });
-
-    // 3. Attach Logout to buttons (Wait for DOM to ensure they exist)
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('logoutBtn')?.addEventListener('click', () => window.doLogout());
-      document.getElementById('mobileLogout')?.addEventListener('click', () => window.doLogout());
     });
   </script>
 </body>
