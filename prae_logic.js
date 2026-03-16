@@ -1,113 +1,103 @@
 /**
- * PraeHire Core Logic v2.0
- * CTO: Jeremiah Adedurin
+ * PraeHire Core Brain v3.0
+ * Authorized by: CTO Jeremiah Adedurin
  */
 
-console.log("🧠 PraeHire Logic: System Booting...");
+console.log("🧠 PraeHire Brain: System Online.");
 
-// Global state for uploaded content
-let state = {
-    resumeText: null,
-    isProcessing: false
-};
+let resumeFileContent = null;
 
-/**
- * 1. PDF EXTRACTION ENGINE
- */
-async function handleResumeUpload(e) {
+// --- 1. PDF PROCESSING ENGINE ---
+async function handleFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
-
-    console.log(`📄 Analyzing: ${file.name}`);
+    
+    console.log("📄 Processing File:", file.name);
     const reader = new FileReader();
-
+    
     reader.onload = async (event) => {
         try {
             const typedarray = new Uint8Array(event.target.result);
+            // Verify pdfjsLib is loaded from CDN
+            if (typeof pdfjsLib === 'undefined') {
+                throw new Error("PDF Library not loaded. Check dashboard.html head.");
+            }
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
-            let extractedText = "";
-
+            let text = "";
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
-                extractedText += content.items.map(s => s.str).join(" ") + "\n";
+                text += content.items.map(s => s.str).join(" ") + "\n";
             }
-
-            state.resumeText = extractedText;
-            console.log("✅ Extraction Complete. Ready for AI.");
-            alert("✅ Resume Loaded Successfully!");
+            resumeFileContent = text;
+            console.log("✅ Resume text extracted successfully.");
+            alert("✅ Resume Loaded! Ready for AI Tailoring.");
         } catch (err) {
             console.error("❌ PDF Engine Error:", err);
-            alert("Could not read PDF. Please ensure it's a standard document.");
+            alert("Error reading PDF. Please try a different version.");
         }
     };
     reader.readAsArrayBuffer(file);
 }
 
-/**
- * 2. AI TAILORING INTERFACE
- */
-async function triggerTailoring() {
+// --- 2. AI TAILORING INTERFACE ---
+async function tailorResume() {
+    console.log("🖱️ Tailor Button Triggered.");
     const jobDesc = document.getElementById('jobDescInput')?.value;
-    const outputField = document.getElementById('optimizedResume');
+    const output = document.getElementById('optimizedResume');
+    
+    if (!resumeFileContent) {
+        return alert("Please upload a resume (PDF) first!");
+    }
+    if (!jobDesc || jobDesc.trim().length < 20) {
+        return alert("Please paste a more detailed job description.");
+    }
 
-    if (!state.resumeText) return alert("Please upload your resume first!");
-    if (!jobDesc || jobDesc.trim().length < 10) return alert("Please provide a detailed job description.");
-    if (state.isProcessing) return;
-
-    state.isProcessing = true;
-    outputField.value = "⏳ Gemini is re-engineering your resume... please wait.";
+    output.value = "⏳ Gemini 1.5 Flash is re-engineering your resume... please wait.";
 
     try {
         const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                resumeText: state.resumeText,
-                jobDescription: jobDesc
+            body: JSON.stringify({ 
+                resumeText: resumeFileContent, 
+                jobDescription: jobDesc 
             })
         });
-
-        if (!response.ok) throw new Error(`Server Error: ${response.status}`);
-
+        
+        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+        
         const data = await response.json();
-        outputField.value = data.tailoredResume || "AI completed but returned no text.";
-        console.log("🤖 AI Optimization Successful.");
+        console.log("🤖 AI Response Received.");
+        output.value = data.tailoredResume || "AI finished, but response body was empty.";
     } catch (err) {
-        console.error("❌ API Error:", err);
-        outputField.value = "❌ Connection failed. Verify Firebase Cloud Functions are live.";
-    } finally {
-        state.isProcessing = false;
+        console.error("❌ AI Connection Error:", err);
+        output.value = "❌ Connection Error. Check your Firebase Cloud Functions log or your Blaze Plan status.";
     }
 }
 
-/**
- * 3. SYSTEM INITIALIZATION (The Handshake)
- */
-function initializePraeHire() {
-    console.log("🤝 Initializing UI Handshake...");
+// --- 3. SYSTEM INITIALIZATION ---
+function init() {
+    console.log("🤝 Establishing UI/Logic Handshake...");
+    const fileInput = document.getElementById('resumeFile');
+    const tailorBtn = document.getElementById('tailorResumeBtn');
 
-    const elements = {
-        fileInput: document.getElementById('resumeFile'),
-        tailorBtn: document.getElementById('tailorResumeBtn')
-    };
-
-    if (elements.fileInput) {
-        elements.fileInput.onchange = handleResumeUpload;
-        console.log("✅ Resume Listener: Active");
+    if (fileInput) {
+        fileInput.onchange = handleFileUpload;
+        console.log("✅ File Upload Listener: Active.");
     }
 
-    if (elements.tailorBtn) {
-        elements.tailorBtn.onclick = triggerTailoring;
-        console.log("✅ Tailor Listener: Active");
+    if (tailorBtn) {
+        tailorBtn.onclick = tailorResume;
+        console.log("✅ Tailor Button Listener: Active.");
     } else {
-        console.warn("⚠️ Tailor button not found in current view.");
+        console.error("⚠️ CRITICAL: Could not find 'tailorResumeBtn' in HTML.");
     }
 }
 
-// Global Boot
+// Global Execution
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializePraeHire);
+    document.addEventListener('DOMContentLoaded', init);
 } else {
-    initializePraeHire();
+    init();
 }
