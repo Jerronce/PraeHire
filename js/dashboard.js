@@ -4,9 +4,17 @@ import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth
 let resumeFileContent = null;
 let tailoredResume = null;
 
-// Updated to stable v1 endpoint
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent';
+// Updated to stable v1 endpoint// This variable will be injected during the GitHub Build process
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
+async function callGemini(prompt) {
+  if (!API_KEY) {
+      console.error("API Key is missing! Check GitHub Secrets.");
+      return "Error: System configuration issue.";
+  }
+  // ... rest of the fetch code remains the same ...
+}
 // ===== RESUME FILE HANDLING =====
 const resumeFileInput = document.getElementById('resumeFile');
 if (resumeFileInput) {
