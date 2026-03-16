@@ -2,37 +2,36 @@
     import { auth } from './js/firebase-config.js';
     import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     
-    // FIXED: Pointing to your actual working script at the root
+    // 1. Load your AI logic (Tailor CV, Interview Coach)
+    // Ensure this file is at the root as seen in your 'ls' command
     import './dashboard_new.js'; 
 
     const ADMIN_EMAIL = "jerronce101@gmail.com".toLowerCase();
 
-    onAuthStateChanged(auth, async (user) => {
+    // Auth guard
+    onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = 'login.html';
-        return;
-      }
-
-      const email = (user.email || '').toLowerCase();
-      // Allow admin or check payment
-      if (email !== ADMIN_EMAIL) {
-        // For now, we'll keep this simple so you can test
-        console.log("User verified:", email);
+      } else {
+        console.log("CTO Authenticated:", user.email);
+        document.getElementById('userGreeting').innerText = `Hello, ${user.email.split('@')[0]}! 👋`;
       }
     });
 
-    // Logout Logic
-    window.doLogout = function() {
-      signOut(auth).then(() => {
+    // 2. Global Logout Function (Fixed Scope)
+    window.doLogout = async function() {
+      try {
+        await signOut(auth);
         window.location.href = 'login.html';
-      }).catch((error) => {
+      } catch (error) {
         console.error("Logout error:", error);
         window.location.href = 'login.html';
-      });
+      }
     };
   </script>
 
   <script>
+    // Tab switching logic
     const tabs = document.querySelectorAll('.tab');
     const sidebarNavItems = document.querySelectorAll('.sidebar-nav .nav-item');
     const mobileMenuItems = document.querySelectorAll('.mobile-menu-item[data-tab]');
@@ -54,13 +53,16 @@
       });
     });
 
+    // Mobile menu toggle
     document.getElementById('mobileMenuToggle')?.addEventListener('click', () => {
       document.getElementById('mobileMenu').classList.toggle('open');
     });
 
-    // Attach logout to buttons
-    document.getElementById('logoutBtn')?.addEventListener('click', () => window.doLogout());
-    document.getElementById('mobileLogout')?.addEventListener('click', () => window.doLogout());
+    // 3. Attach Logout to buttons (Wait for DOM to ensure they exist)
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('logoutBtn')?.addEventListener('click', () => window.doLogout());
+      document.getElementById('mobileLogout')?.addEventListener('click', () => window.doLogout());
+    });
   </script>
 </body>
 </html>
