@@ -1,82 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PraeHire Dashboard</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-</head>
-<body>
-  <div class="app">
-    <main class="content">
-      <div id="userGreeting" class="greeting" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Hello! 👋</div>
-      
-      <section id="tab-resume" class="tab active">
-        <h2 style="color: #333;">Resume Tailor</h2>
-        <div style="margin: 20px 0;">
-            <label><strong>1. Upload Resume (PDF):</strong></label><br>
-            <input type="file" id="resumeFile" accept=".pdf" style="margin-top: 10px;">
-        </div>
-        
-        <div style="margin: 20px 0;">
-            <label><strong>2. Paste Job Description:</strong></label><br>
-            <textarea id="jobDescInput" style="width: 100%; height: 150px; margin-top: 10px; border-radius: 8px; padding: 10px;" placeholder="Paste Job Description here..."></textarea>
-        </div>
-        
-        <button id="tailorResumeBtn" style="background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Tailor Resume with AI</button>
-        
-        <div style="margin-top: 30px;">
-            <label><strong>3. AI Optimized Result:</strong></label><br>
-            <textarea id="optimizedResume" style="width: 100%; height: 200px; margin-top: 10px; border-radius: 8px; padding: 10px;" placeholder="Result here..." readonly></textarea>
-        </div>
-      </section>
-    </main>
-  </div>
+// PraeHire Brain - dashboard_new.js
+console.log("🧠 Brain file detected and executing...");
 
-  <script type="module">
-    // FIXED PATHS: Matching your js/js/ folder structure
-    import { auth } from './js/js/firebase-config.js'; 
-    import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+let resumeFileContent = null;
+
+// 1. PDF EXTRACTION
+async function handleFileUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
     
-    console.log("System Initializing...");
-
-    // Auth Guard
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        console.log("No user, redirecting to login...");
-        window.location.href = 'login.html';
-      } else {
-        console.log("CTO Authenticated:", user.email);
-        const greeting = document.getElementById('userGreeting');
-        if (greeting) greeting.innerText = `Hello, ${user.email.split('@')[0]}! 👋`;
-      }
-    });
-
-    // Load Brain Logic Safely from root
-    import('./dashboard_new.js').then(() => {
-      console.log("AI Brain connected.");
-    }).catch(err => {
-      console.error("Critical Error: dashboard_new.js is missing or has a syntax error.");
-    });
-  </script>
-
-  <script>
-    // Tab switching logic (Global)
-    document.addEventListener('DOMContentLoaded', () => {
-        const tabs = document.querySelectorAll('.tab');
-        const navItems = document.querySelectorAll('.nav-item, .mobile-menu-item');
-
-        navItems.forEach(item => {
-          item.addEventListener('click', () => {
-            const target = item.dataset.tab;
-            if(target) {
-                tabs.forEach(t => t.classList.toggle('active', t.id === 'tab-' + target));
+    console.log("📄 File selected:", file.name);
+    const reader = new FileReader();
+    
+    reader.onload = async (event) => {
+        try {
+            const typedarray = new Uint8Array(event.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let text = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                text += content.items.map(s => s.str).join(" ") + "\n";
             }
-          });
+            resumeFileContent = text;
+            console.log("✅ PDF Text Extracted. Length:", text.length);
+            alert("✅ Resume Loaded! Ready to tailor.");
+        } catch (err) {
+            console.error("❌ PDF Error:", err);
+            alert("Error reading PDF. Make sure it is not encrypted.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// 2. AI TAILORING LOGIC
+async function tailorResume() {
+    console.log("🖱️ Tailor Button Clicked!");
+    const jobDesc = document.getElementById('jobDescInput')?.value;
+    const output = document.getElementById('optimizedResume');
+    
+    if (!resumeFileContent) {
+        alert("Please upload a resume first!");
+        return;
+    }
+    if (!jobDesc || jobDesc.trim() === "") {
+        alert("Please paste a job description!");
+        return;
+    }
+
+    output.value = "⏳ AI is tailoring your resume... please wait.";
+
+    try {
+        const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                resumeText: resumeFileContent, 
+                jobDescription: jobDesc 
+            })
         });
-        console.log("UI Navigation Ready.");
-    });
-  </script>
-</body>
-</html>
+        
+        const data = await response.json();
+        console.log("🤖 AI Response:", data);
+        output.value = data.tailoredResume || "AI finished, but returned no text.";
+    } catch (err) {
+        console.error("❌ Connection Error:", err);
+        output.value = "❌ Connection Error. Check your Firebase Cloud Functions.";
+    }
+}
+
+// 3. THE HANDSHAKE (Wait for HTML to load)
+function init() {
+    console.log("🤝 Setting up listeners...");
+    const fileInput = document.getElementById('resumeFile');
+    const tailorBtn = document.getElementById('tailorResumeBtn');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFileUpload);
+        console.log("✅ File input listener attached.");
+    }
+
+    if (tailorBtn) {
+        // We use 'onclick' here as a fail-safe against multiple listeners
+        tailorBtn.onclick = tailorResume;
+        console.log("✅ Tailor button listener attached.");
+    } else {
+        console.error("⚠️ Could not find tailorResumeBtn in the HTML!");
+    }
+}
+
+// Execute initialization
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
