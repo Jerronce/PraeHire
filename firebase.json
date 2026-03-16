@@ -6,15 +6,12 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "cleanUrls": true,
+    "cleanUrls": false,
     "rewrites": [
       {
-        "source": "/dashboard",
-        "destination": "/dashboard.html"
+        "source": "**",
+        "destination": "/index.html"
       }
-    ],
-    "functions": {
-      "source": "functions"
-    }
+    ]
   }
 }
