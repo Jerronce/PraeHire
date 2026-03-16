@@ -1,20 +1,12 @@
-import { auth, db, storage } from './firebase-config.js';
-import { signOut } from 'https://www.gstatic.com/firebasejs/9.17.2/firebase-auth.js';
+import { auth, db, storage } from './js/firebase-config.js';
 
 let resumeFileContent = null;
 let tailoredResume = null;
 
-// Updated to stable v1 endpoint// This variable will be injected during the GitHub Build process
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY; 
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+// Use the Cloud Function URLs we deployed earlier
+const TAILOR_URL = 'https://us-central1-praehire.cloudfunctions.net/tailorResume';
+const COACH_URL = 'https://us-central1-praehire.cloudfunctions.net/interviewCoach';
 
-async function callGemini(prompt) {
-  if (!API_KEY) {
-      console.error("API Key is missing! Check GitHub Secrets.");
-      return "Error: System configuration issue.";
-  }
-  // ... rest of the fetch code remains the same ...
-}
 // ===== RESUME FILE HANDLING =====
 const resumeFileInput = document.getElementById('resumeFile');
 if (resumeFileInput) {
@@ -29,7 +21,7 @@ if (resumeFileInput) {
           fileReader.readAsArrayBuffer(file);
         });
         
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        // Ensure pdfjsLib is loaded from the HTML CDN
         const pdf = await pdfjsLib.getDocument({data: fileData}).promise;
         let fullText = '';
         for (let i = 1; i <= pdf.numPages; i++) {
@@ -41,6 +33,7 @@ if (resumeFileInput) {
         alert('Resume uploaded successfully!');
       } catch (error) {
         console.error('File Error:', error);
+        alert('Error reading PDF. Make sure it is not password protected.');
       }
     }
   });
@@ -50,24 +43,23 @@ if (resumeFileInput) {
 async function tailorResume() {
   const jobDescInput = document.getElementById('jobDescInput');
   const optimizedField = document.getElementById('optimizedResume');
-  const jobDesc = jobDescInput.value.trim();
+  const jobDesc = jobDescInput?.value.trim();
 
   if (!resumeFileContent || !jobDesc) return alert('Upload resume and paste Job Description!');
 
   optimizedField.value = 'AI is tailoring your resume...';
   
   try {
-    // Calling your Firebase Cloud Function
-    const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
+    const response = await fetch(TAILOR_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ resumeText: resumeFileContent, jobDescription: jobDesc })
     });
     const data = await response.json();
-    tailoredResume = data.tailoredResume;
-    optimizedField.value = tailoredResume;
+    optimizedField.value = data.tailoredResume || "Error: No response from AI.";
   } catch (error) {
-    optimizedField.value = 'Error tailoring resume.';
+    optimizedField.value = 'Error: Make sure Cloud Functions are deployed.';
+    console.error(error);
   }
 }
 
@@ -75,18 +67,18 @@ async function tailorResume() {
 async function startInterviewPractice() {
   const chatInput = document.getElementById('chatInput');
   const chatWindow = document.getElementById('chatWindow');
-  const userMessage = chatInput.value.trim();
+  const userMessage = chatInput?.value.trim();
 
   if (!userMessage) return;
 
   const userMsgDiv = document.createElement('div');
+  userMsgDiv.style.margin = "10px 0";
   userMsgDiv.innerHTML = `<strong>You:</strong> ${userMessage}`;
   chatWindow.appendChild(userMsgDiv);
   chatInput.value = '';
 
   try {
-    // FIXED: Pointing to your Cloud Function instead of a local path
-    const response = await fetch('https://us-central1-praehire.cloudfunctions.net/interviewCoach', {
+    const response = await fetch(COACH_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -96,13 +88,18 @@ async function startInterviewPractice() {
     });
     const data = await response.json();
     const aiMsgDiv = document.createElement('div');
+    aiMsgDiv.style.margin = "10px 0";
     aiMsgDiv.innerHTML = `<strong>Coach:</strong> ${data.aiResponse}`;
     chatWindow.appendChild(aiMsgDiv);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
   } catch (error) {
     console.error('Coach Error:', error);
   }
 }
 
 // Listeners
-document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
-document.getElementById('sendChat')?.addEventListener('click', startInterviewPractice);
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
+    document.getElementById('sendChat')?.addEventListener('click', startInterviewPractice);
+    console.log("PraeHire Dashboard Logic Ready!");
+});
