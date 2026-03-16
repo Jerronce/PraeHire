@@ -10,49 +10,72 @@
 <body>
   <div class="app">
     <main class="content">
-      <div id="userGreeting" class="greeting">Hello! 👋</div>
+      <div id="userGreeting" class="greeting" style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">Hello! 👋</div>
       
       <section id="tab-resume" class="tab active">
-        <h2>Resume Tailor</h2>
-        <input type="file" id="resumeFile" accept=".pdf">
-        <textarea id="jobDescInput" placeholder="Paste Job Description"></textarea>
-        <button id="tailorResumeBtn" class="btn-primary">Tailor Resume with AI</button>
-        <textarea id="optimizedResume" placeholder="Result here..."></textarea>
+        <h2 style="color: #333;">Resume Tailor</h2>
+        <div style="margin: 20px 0;">
+            <label><strong>1. Upload Resume (PDF):</strong></label><br>
+            <input type="file" id="resumeFile" accept=".pdf" style="margin-top: 10px;">
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <label><strong>2. Paste Job Description:</strong></label><br>
+            <textarea id="jobDescInput" style="width: 100%; height: 150px; margin-top: 10px; border-radius: 8px; padding: 10px;" placeholder="Paste Job Description here..."></textarea>
+        </div>
+        
+        <button id="tailorResumeBtn" style="background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">Tailor Resume with AI</button>
+        
+        <div style="margin-top: 30px;">
+            <label><strong>3. AI Optimized Result:</strong></label><br>
+            <textarea id="optimizedResume" style="width: 100%; height: 200px; margin-top: 10px; border-radius: 8px; padding: 10px;" placeholder="Result here..." readonly></textarea>
+        </div>
       </section>
     </main>
   </div>
 
   <script type="module">
-    import { auth } from './js/firebase-config.js';
+    // FIXED PATHS: Matching your js/js/ folder structure
+    import { auth } from './js/js/firebase-config.js'; 
     import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
     
+    console.log("System Initializing...");
+
     // Auth Guard
     onAuthStateChanged(auth, (user) => {
       if (!user) {
+        console.log("No user, redirecting to login...");
         window.location.href = 'login.html';
       } else {
-        console.log("Logged in:", user.email);
+        console.log("CTO Authenticated:", user.email);
+        const greeting = document.getElementById('userGreeting');
+        if (greeting) greeting.innerText = `Hello, ${user.email.split('@')[0]}! 👋`;
       }
     });
 
-    // Load the Brain Logic
+    // Load Brain Logic Safely from root
     import('./dashboard_new.js').then(() => {
-      console.log("AI Logic connected successfully.");
+      console.log("AI Brain connected.");
     }).catch(err => {
-      console.error("Path error: dashboard_new.js not found at root.");
+      console.error("Critical Error: dashboard_new.js is missing or has a syntax error.");
     });
   </script>
 
   <script>
-    // Tab switching logic
-    const tabs = document.querySelectorAll('.tab');
-    const navItems = document.querySelectorAll('.nav-item, .mobile-menu-item');
+    // Tab switching logic (Global)
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab');
+        const navItems = document.querySelectorAll('.nav-item, .mobile-menu-item');
 
-    navItems.forEach(item => {
-      item.addEventListener('click', () => {
-        const target = item.dataset.tab;
-        tabs.forEach(t => t.classList.toggle('active', t.id === 'tab-' + target));
-      });
+        navItems.forEach(item => {
+          item.addEventListener('click', () => {
+            const target = item.dataset.tab;
+            if(target) {
+                tabs.forEach(t => t.classList.toggle('active', t.id === 'tab-' + target));
+            }
+          });
+        });
+        console.log("UI Navigation Ready.");
     });
   </script>
 </body>
