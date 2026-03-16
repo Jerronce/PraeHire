@@ -13,12 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install and Build
-        # This step builds your app and injects the API Key from GitHub Secrets
+      - name: Install Dependencies
+        # This tells the robot to enter the functions folder and only install tools
         working-directory: ./functions
-        run: |
-          npm install
-          npm run build
+        run: npm install
         env:
           VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
