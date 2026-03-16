@@ -13,11 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Install Dependencies and Build
+        # This step is mandatory to inject the API key into your app's build
+        run: |
+          npm install
+          npm run build
+        env:
+          # This makes the secret available to your React/Vue/Plain JS code
+          VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
           channelId: live
-          
           projectId: praehire
