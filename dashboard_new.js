@@ -15,7 +15,7 @@ const initFileHandler = () => {
 
             console.log("📄 File selected:", file.name);
             const reader = new FileReader();
-            
+
             reader.onload = async (event) => {
                 try {
                     const typedarray = new Uint8Array(event.target.result);
@@ -49,7 +49,7 @@ async function tailorResume() {
     console.log("🖱️ Tailor Resume button clicked.");
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
-    
+
     if (!resumeFileContent) {
         console.warn("⚠️ Attempted to tailor without resume content.");
         return alert("Please upload a resume first!");
@@ -65,17 +65,17 @@ async function tailorResume() {
         const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                resumeText: resumeFileContent, 
-                jobDescription: jobDesc 
+            body: JSON.stringify({
+                resumeText: resumeFileContent,
+                jobDescription: jobDesc
             })
         });
-        
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData.error || "Cloud Function Error");
         }
-        
+
         const data = await response.json();
         console.log("✅ AI tailoring complete.");
         output.value = data.tailoredResume || "AI finished, but returned no text.";
@@ -91,7 +91,7 @@ async function tailorResume() {
 const init = () => {
     console.log("🚀 Initializing button listeners...");
     initFileHandler();
-    
+
     const tailorBtn = document.getElementById('tailorResumeBtn');
     if (tailorBtn) {
         tailorBtn.addEventListener('click', tailorResume);
