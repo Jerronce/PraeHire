@@ -3,9 +3,16 @@
     "public": ".",
     "ignore": [
       "firebase.json",
+      "**/.*",
       "**/node_modules/**"
     ],
     "cleanUrls": true,
+    "rewrites": [
+      {
+        "source": "/dashboard",
+        "destination": "/dashboard.html"
+      }
+    ],
     "functions": {
       "source": "functions"
     }
