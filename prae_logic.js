@@ -1,109 +1,113 @@
-// PraeHire Dashboard Logic - Optimized for Jerry Adedurin
-console.log("🛠️ dashboard_new.js: Script started loading...");
-
-let resumeFileContent = null;
-
 /**
- * 1. Handle PDF Upload & Text Extraction
+ * PraeHire Core Logic v2.0
+ * CTO: Jeremiah Adedurin
  */
-const initFileHandler = () => {
-    const resumeFileInput = document.getElementById('resumeFile');
-    if (resumeFileInput) {
-        resumeFileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
 
-            console.log("📄 File selected:", file.name);
-            const reader = new FileReader();
+console.log("🧠 PraeHire Logic: System Booting...");
 
-            reader.onload = async (event) => {
-                try {
-                    const typedarray = new Uint8Array(event.target.result);
-                    // Use the pdfjsLib loaded via CDN in dashboard.html
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let text = "";
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const content = await page.getTextContent();
-                        text += content.items.map(s => s.str).join(" ") + "\n";
-                    }
-                    resumeFileContent = text;
-                    console.log("✅ PDF text extraction successful.");
-                    alert("✅ Resume Loaded! You can now click Tailor Resume.");
-                } catch (err) {
-                    console.error("❌ PDF extraction error:", err);
-                    alert("Error reading PDF. Is it a valid PDF?");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
-    } else {
-        console.error("❌ HTML Error: Could not find 'resumeFile' input.");
-    }
+// Global state for uploaded content
+let state = {
+    resumeText: null,
+    isProcessing: false
 };
 
 /**
- * 2. AI Tailoring Function
+ * 1. PDF EXTRACTION ENGINE
  */
-async function tailorResume() {
-    console.log("🖱️ Tailor Resume button clicked.");
+async function handleResumeUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    console.log(`📄 Analyzing: ${file.name}`);
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+        try {
+            const typedarray = new Uint8Array(event.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let extractedText = "";
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                extractedText += content.items.map(s => s.str).join(" ") + "\n";
+            }
+
+            state.resumeText = extractedText;
+            console.log("✅ Extraction Complete. Ready for AI.");
+            alert("✅ Resume Loaded Successfully!");
+        } catch (err) {
+            console.error("❌ PDF Engine Error:", err);
+            alert("Could not read PDF. Please ensure it's a standard document.");
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+/**
+ * 2. AI TAILORING INTERFACE
+ */
+async function triggerTailoring() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
-    const output = document.getElementById('optimizedResume');
+    const outputField = document.getElementById('optimizedResume');
 
-    if (!resumeFileContent) {
-        console.warn("⚠️ Attempted to tailor without resume content.");
-        return alert("Please upload a resume first!");
-    }
-    if (!jobDesc || jobDesc.trim() === "") {
-        console.warn("⚠️ Attempted to tailor without job description.");
-        return alert("Please paste a job description!");
-    }
+    if (!state.resumeText) return alert("Please upload your resume first!");
+    if (!jobDesc || jobDesc.trim().length < 10) return alert("Please provide a detailed job description.");
+    if (state.isProcessing) return;
 
-    output.value = "⏳ AI is tailoring your resume... please wait.";
+    state.isProcessing = true;
+    outputField.value = "⏳ Gemini is re-engineering your resume... please wait.";
 
     try {
         const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                resumeText: resumeFileContent,
+                resumeText: state.resumeText,
                 jobDescription: jobDesc
             })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || "Cloud Function Error");
-        }
+        if (!response.ok) throw new Error(`Server Error: ${response.status}`);
 
         const data = await response.json();
-        console.log("✅ AI tailoring complete.");
-        output.value = data.tailoredResume || "AI finished, but returned no text.";
+        outputField.value = data.tailoredResume || "AI completed but returned no text.";
+        console.log("🤖 AI Optimization Successful.");
     } catch (err) {
-        console.error("❌ Fetch Error:", err);
-        output.value = "❌ Connection Error. Ensure Firebase billing is active (Blaze plan) and functions are deployed.";
+        console.error("❌ API Error:", err);
+        outputField.value = "❌ Connection failed. Verify Firebase Cloud Functions are live.";
+    } finally {
+        state.isProcessing = false;
     }
 }
 
 /**
- * 3. Initialization - Wait for DOM
+ * 3. SYSTEM INITIALIZATION (The Handshake)
  */
-const init = () => {
-    console.log("🚀 Initializing button listeners...");
-    initFileHandler();
+function initializePraeHire() {
+    console.log("🤝 Initializing UI Handshake...");
 
-    const tailorBtn = document.getElementById('tailorResumeBtn');
-    if (tailorBtn) {
-        tailorBtn.addEventListener('click', tailorResume);
-        console.log("✅ AI Logic attached to 'tailorResumeBtn'.");
-    } else {
-        console.error("❌ HTML Error: Could not find 'tailorResumeBtn'.");
+    const elements = {
+        fileInput: document.getElementById('resumeFile'),
+        tailorBtn: document.getElementById('tailorResumeBtn')
+    };
+
+    if (elements.fileInput) {
+        elements.fileInput.onchange = handleResumeUpload;
+        console.log("✅ Resume Listener: Active");
     }
-};
 
-// Start the engine
+    if (elements.tailorBtn) {
+        elements.tailorBtn.onclick = triggerTailoring;
+        console.log("✅ Tailor Listener: Active");
+    } else {
+        console.warn("⚠️ Tailor button not found in current view.");
+    }
+}
+
+// Global Boot
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', initializePraeHire);
 } else {
-    init();
+    initializePraeHire();
 }
