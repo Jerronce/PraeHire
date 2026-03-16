@@ -15,6 +15,7 @@ jobs:
 
       - name: Install and Build
         # This step builds your app and injects the API Key from GitHub Secrets
+        working-directory: ./functions
         run: |
           npm install
           npm run build
