@@ -1,6 +1,7 @@
 /**
- * PraeHire Core Brain v4.5.2 - CTO Jeremiah Adedurin Edition
- * Features: AI Tailoring (v1beta fix), Mock Interviewer, Logs, & Downloads
+ * PraeHire Core Brain v4.6 - CTO Jeremiah Adedurin Edition
+ * Features: AI Tailoring (v1 Stable Force), Mock Interviewer, Logs, & Downloads
+ * Version Notes: Forced stable endpoint to bypass caching issues.
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
@@ -43,7 +44,7 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 3. AI TAILORING (v1beta Fix) ---
+// --- 3. AI TAILORING (Forced Stable v1) ---
 async function tailorResume() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
@@ -52,16 +53,16 @@ async function tailorResume() {
     if (!resumeFileContent) return alert("Upload Resume first!");
     if (!jobDesc || jobDesc.length < 50) return alert("Paste full Job Description!");
 
-    addLog("🚀 Requesting Gemini 1.5 Flash Re-engineering...");
+    addLog("🚀 Requesting Gemini 1.5 Flash (Forced Stable v1)...");
     output.value = "⏳ Gemini is re-engineering your resume... please wait.";
 
     try {
-        // FIXED URL: Using v1beta for reliable Flash access
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // ULTIMATE FIX: Using the v1 stable endpoint with -latest tag
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are an expert recruiter. Re-engineer this resume: ${resumeFileContent} to match this job description: ${jobDesc}` }] }]
+                contents: [{ parts: [{ text: `You are a professional recruiter. Re-engineer this resume: ${resumeFileContent} to match this job: ${jobDesc}` }] }]
             })
         });
 
@@ -72,7 +73,7 @@ async function tailorResume() {
             addLog("✅ Success! Resume tailored.");
         } else {
             addLog(`❌ API Error: ${data.error?.message || "Check Console"}`);
-            console.log("Full Error Data:", data);
+            console.log("Full Debug Info:", data);
         }
     } catch (err) {
         addLog("❌ Connection Blocked.");
@@ -91,11 +92,11 @@ async function sendInterviewAnswer() {
     addLog("💬 Sent answer to AI Interviewer...");
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are a technical interviewer. Based on this CV: ${resumeFileContent}, the candidate said: "${val}". Give brief feedback and ask the next interview question.` }] }]
+                contents: [{ parts: [{ text: `You are a technical interviewer. CV: ${resumeFileContent}. User said: "${val}". Give feedback and ask next question.` }] }]
             })
         });
 
@@ -115,7 +116,7 @@ window.downloadAsPDF = function() {
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = "Tailored_Resume.txt";
+    link.download = "Tailored_Resume_PraeHire.txt";
     link.click();
     addLog("💾 Downloaded tailored resume as .txt");
 };
@@ -129,9 +130,8 @@ window.searchJobs = function() {
     const query = document.getElementById('jobSearch').value;
     if(!query) return alert("Enter a role first!");
     addLog(`🔍 Searching for ${query} roles in Lagos...`);
-    // Simulated Search Result
     setTimeout(() => {
-        addLog("✅ Found 5 matching roles on LinkedIn.");
+        addLog("✅ Found matching roles on LinkedIn.");
         window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}&location=Lagos%2C%20Nigeria`, "_blank");
     }, 1000);
 };
