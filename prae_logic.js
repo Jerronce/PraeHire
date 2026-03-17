@@ -1,14 +1,16 @@
 /**
- * PraeHire Core Brain v4.7 - CTO Jeremiah Adedurin Edition
- * Features: AI Tailoring, Mock Interviewer, Logs, & Downloads
- * Version Notes: Unified to v1beta for maximum regional compatibility.
+ * PraeHire Core Brain v5.0 - CTO Jeremiah Adedurin Edition
+ * Features: Secure Key Logic, AI Tailoring, Match Scoring, & Mock Interviewer
+ * Security: Hardcoded keys REMOVED for GitHub Secrets integration.
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
 
 let resumeFileContent = null;
-// PASTE YOUR NEW API KEY BELOW
-const GEMINI_API_KEY = 'AIzaSyCzuUBxm8Se-tTJ5DLLHrdD5YsfpzrQpc0'; 
+
+// --- SECURE KEY RETRIEVAL ---
+// Use GitHub Secrets to inject this during build/deploy
+const GEMINI_API_KEY = typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : ''; 
 
 // --- 1. SYSTEM LOGGING ---
 function addLog(message) {
@@ -45,12 +47,16 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 3. AI TAILORING ---
+// --- 3. AI TAILORING & MATCH SCORING ---
 async function tailorResume() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     const actions = document.getElementById('actionButtons');
     
+    if (!GEMINI_API_KEY) {
+        addLog("⚠️ Security: API Key missing. Ensure GitHub Secrets are set.");
+        return alert("CTO Note: API Key is not set in this build.");
+    }
     if (!resumeFileContent) return alert("Upload Resume first!");
     if (!jobDesc || jobDesc.length < 50) return alert("Paste full Job Description!");
 
@@ -62,18 +68,29 @@ async function tailorResume() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are a professional recruiter. Re-engineer this resume: ${resumeFileContent} to match this job: ${jobDesc}` }] }]
+                contents: [{ parts: [{ text: `
+                    Task: 1. Re-engineer this resume: ${resumeFileContent} to match this job: ${jobDesc}.
+                    2. Provide a Match Score out of 100 and a 1-sentence analysis.
+                    Format the analysis as: [SCORE] XX/100 | [ANALYSIS] Your text here.
+                    Return the tailored resume text after the score.` 
+                }] }]
             })
         });
 
         const data = await response.json();
         if (data.candidates && data.candidates[0].content) {
-            output.value = data.candidates[0].content.parts[0].text;
+            const rawResult = data.candidates[0].content.parts[0].text;
+            
+            // Extract Score for the Logs
+            const scoreMatch = rawResult.match(/\[SCORE\]\s*(\d+)\/100/);
+            const score = scoreMatch ? scoreMatch[1] : "??";
+            
+            output.value = rawResult;
             actions.style.display = 'flex';
+            addLog(`📊 MATCH SCORE: ${score}%`);
             addLog("✅ Success! Resume tailored.");
         } else {
             addLog(`❌ API Error: ${data.error?.message || "Check Console"}`);
-            console.log("Full Debug Info:", data);
         }
     } catch (err) {
         addLog("❌ Connection Blocked.");
@@ -96,7 +113,7 @@ async function sendInterviewAnswer() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are a technical interviewer. Based on this CV: ${resumeFileContent}, the candidate said: "${val}". Give feedback and ask the next question.` }] }]
+                contents: [{ parts: [{ text: `Recruiter Interview: Resume: ${resumeFileContent}. User said: "${val}". Give feedback and ask next question.` }] }]
             })
         });
 
@@ -118,34 +135,32 @@ window.downloadAsPDF = function() {
     link.href = URL.createObjectURL(blob);
     link.download = "Tailored_Resume_PraeHire.txt";
     link.click();
-    addLog("💾 Downloaded tailored resume as .txt");
+    addLog("💾 Saved tailored resume as .txt");
 };
 
 window.shareToLinkedIn = function() {
     window.open("https://www.linkedin.com/feed/", "_blank");
-    addLog("🌐 LinkedIn feed opened for sharing.");
+    addLog("🌐 LinkedIn feed opened.");
 };
 
 window.searchJobs = function() {
     const query = document.getElementById('jobSearch').value;
     if(!query) return alert("Enter a role first!");
-    addLog(`🔍 Searching for ${query} roles in Lagos...`);
+    addLog(`🔍 Searching Lagos for ${query}...`);
     setTimeout(() => {
-        addLog("✅ Found matching roles on LinkedIn.");
+        addLog("✅ Results ready on LinkedIn.");
         window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}&location=Lagos%2C%20Nigeria`, "_blank");
     }, 1000);
 };
 
 // --- 6. INITIALIZATION ---
 function init() {
-    console.log("🤝 Establishing UI/Logic Handshake...");
     document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
     document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
     document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
     document.getElementById('downloadBtn')?.addEventListener('click', () => window.downloadAsPDF());
     document.getElementById('shareBtn')?.addEventListener('click', () => window.shareToLinkedIn());
     document.getElementById('searchJobsBtn')?.addEventListener('click', () => window.searchJobs());
-    addLog("✅ System Handshake Complete. Buttons Active.");
 }
 
 init();
