@@ -7,7 +7,7 @@ console.log("🧠 PraeHire Brain: System Online.");
 
 let resumeFileContent = null;
 // --- CTO SECURITY NOTE: Ensure this key is restricted in Google Cloud Console ---
-const GEMINI_API_KEY = 'AIzaSyCXjg6wSMhK6OhIQevJZuSK9YEv0lcjPiI'; 
+const GEMINI_API_KEY = 'AIzaSyBs7ZmsUggMy4HKg-wimi803PSRUAm6tH4'; 
 
 // --- 1. PDF PROCESSING ENGINE ---
 async function handleFileUpload(e) {
