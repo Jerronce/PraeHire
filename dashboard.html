@@ -3,104 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PraeHire Dashboard | CTO Edition</title>
+  <title>PraeHire Dashboard | Global Edition</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
-    .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #f0f0f0; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-    .tab-btn.active { background: #007bff; color: white; box-shadow: 0 4px 12px rgba(0,123,255,0.3); }
-    .tab-content { display: none; animation: fadeIn 0.4s; }
+    /* GLOBAL DARK THEME FIX */
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+    h2, h3, strong { color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+    label { color: #cbd5e1 !important; }
+    
+    .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+    .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #1e293b; color: #94a3b8; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .tab-btn.active { background: #3b82f6; color: white; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); }
+    
+    .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
     .tab-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    
-    /* Modern Upload Styling */
-    .upload-box { border: 2px dashed #007bff; padding: 25px; border-radius: 12px; text-align: center; background: #f8faff; transition: 0.3s; }
-    .upload-box:hover { background: #f0f5ff; border-color: #0056b3; }
-    
-    /* Manual Form Styling */
-    .manual-form { background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; margin-top: 15px; }
-    .manual-input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ddd; font-family: inherit; }
 
-    /* Result Pulse Animation */
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-    .loading-pulse { animation: pulse 1.5s infinite; border-color: #007bff !important; box-shadow: 0 0 15px rgba(0,123,255,0.2); }
+    /* VISUAL SCORE BAR */
+    .score-container { margin-top: 15px; display: none; background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
+    .progress-bg { background: #334155; height: 12px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
+    #progressBar { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 1s ease-in-out; }
 
-    #interviewChat { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; background: #fff; border-radius: 12px; margin-bottom: 10px; }
-    #systemLogs { margin-top: 20px; background: #1a1a1a; color: #00ff00; padding: 12px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #00ff00; }
+    /* MODERN UI ELEMENTS */
+    .upload-box { border: 2px dashed #3b82f6; padding: 30px; border-radius: 16px; text-align: center; background: rgba(30, 41, 59, 0.5); }
+    .manual-form { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-top: 15px; }
+    .manual-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; }
+
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+    .loading-pulse { animation: pulse 2s infinite; border-color: #3b82f6 !important; }
+
+    #interviewChat { height: 350px; overflow-y: auto; border: 1px solid #334155; padding: 20px; background: #1e293b; border-radius: 16px; margin-bottom: 10px; color: #e2e8f0; }
+    #systemLogs { margin-top: 20px; background: #000; color: #10b981; padding: 15px; border-radius: 12px; font-family: 'Fira Code', monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #3b82f6; opacity: 0.9; }
   </style>
 </head>
 <body>
-  <div class="app">
+  <div class="app" style="max-width: 900px; margin: auto; padding: 20px;">
     <main class="content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div id="userGreeting" class="greeting" style="font-size: 26px; font-weight: 800; color: #1a1a1a;">Hello! 👋</div>
-        <button id="logoutBtn" style="background: transparent; color: #ff4d4d; border: 2px solid #ff4d4d; cursor: pointer; padding: 8px 18px; border-radius: 8px; font-weight: bold;">Logout</button>
+        <div id="userGreeting" style="font-size: 28px; font-weight: 800; letter-spacing: -1px;">Hello! 👋</div>
+        <button id="logoutBtn" style="background: transparent; color: #ef4444; border: 2px solid #ef4444; cursor: pointer; padding: 8px 20px; border-radius: 10px; font-weight: 700; transition: 0.3s;">Logout</button>
       </div>
 
-      <nav class="tab-nav" style="margin-top: 25px;">
+      <nav class="tab-nav" style="margin-top: 30px;">
         <button class="tab-btn active" onclick="openTab('tab-resume')">Resume Tailor</button>
         <button class="tab-btn" onclick="openTab('tab-interview')">AI Interviewer</button>
-        <button class="tab-btn" onclick="openTab('tab-apply')">Auto-Apply Helper</button>
+        <button class="tab-btn" onclick="openTab('tab-apply')">Opportunity Finder</button>
       </nav>
 
       <section id="tab-resume" class="tab-content active">
-        <h2 style="color: #1a1a1a; margin-bottom: 5px;">AI Resume Re-engineering</h2>
-        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Upload a PDF or enter your details manually below.</p>
+        <h2>AI Resume Optimization</h2>
+        <p style="color: #94a3b8; margin-bottom: 25px;">Build a world-class resume or optimize your existing PDF.</p>
         
         <div class="upload-box">
-            <label for="resumeFile" style="cursor: pointer; color: #007bff; font-weight: bold; font-size: 16px;">
-                📁 Click to Upload Resume (PDF)
+            <label for="resumeFile" style="cursor: pointer; color: #3b82f6; font-weight: 800; font-size: 18px;">
+                📁 Upload Professional CV (PDF)
             </label>
             <input type="file" id="resumeFile" accept=".pdf" style="display: none;">
-            <p id="fileName" style="font-size: 12px; color: #888; margin-top: 8px;">No file selected</p>
+            <p id="fileName" style="font-size: 13px; color: #64748b; margin-top: 10px;">Ready to scan...</p>
         </div>
 
         <div id="manualEntryForm" class="manual-form">
-            <p style="font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #333;">Or Build From Scratch:</p>
-            <input type="text" id="userName" class="manual-input" placeholder="Your Full Name">
-            <input type="text" id="userTitle" class="manual-input" placeholder="Current or Target Title (e.g. Software Engineer)">
-            <textarea id="userExperience" class="manual-input" style="height: 80px;" placeholder="List your key skills, education, and past work experience..."></textarea>
+            <p style="font-weight: 700; margin-bottom: 15px; color: #cbd5e1;">Manual Career Profile:</p>
+            <input type="text" id="userName" class="manual-input" placeholder="Full Name">
+            <input type="text" id="userTitle" class="manual-input" placeholder="Target Role (e.g. Cloud Engineer)">
+            <textarea id="userExperience" class="manual-input" style="height: 100px;" placeholder="Paste your bio, skills, or old resume text here..."></textarea>
         </div>
 
-        <div style="margin: 20px 0;">
-            <label><strong>Target Job Description:</strong></label><br>
-            <textarea id="jobDescInput" style="width: 100%; height: 120px; margin-top: 10px; border-radius: 10px; padding: 12px; border: 1px solid #ccc; font-size: 14px;" placeholder="Paste the Job Description from LinkedIn/Indeed here..."></textarea>
+        <div style="margin: 25px 0;">
+            <label><strong>Target Job Description:</strong></label>
+            <textarea id="jobDescInput" style="width: 100%; height: 140px; margin-top: 10px; border-radius: 12px; padding: 15px; border: 1px solid #334155; background: #1e293b; color: white;" placeholder="Paste the 'About the Role' section from LinkedIn..."></textarea>
         </div>
 
-        <button id="tailorResumeBtn" type="button" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">🚀 Generate & Tailor Resume</button>
+        <button id="tailorResumeBtn" style="background: #3b82f6; color: white; padding: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: 800; width: 100%; font-size: 17px;">🚀 Analyze & Tailor My Career</button>
         
-        <div style="margin-top: 30px;">
+        <div id="scoreSection" class="score-container">
+            <div style="display: flex; justify-content: space-between;">
+                <span style="font-weight: 800; color: #fff;">MATCH MATCH SCORE</span>
+                <span id="scoreText" style="color: #10b981; font-weight: 800;">0%</span>
+            </div>
+            <div class="progress-bg"><div id="progressBar"></div></div>
+            <p id="aiAnalysis" style="font-size: 13px; color: #94a3b8; margin-top: 10px; font-style: italic;"></p>
+        </div>
+
+        <div style="margin-top: 35px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label><strong>3. AI Optimized Result:</strong></label>
+                <label><strong>AI Optimized Result:</strong></label>
                 <div id="actionButtons" style="display: none; gap: 10px;">
-                    <button id="downloadBtn" style="background: #28a745; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">📥 Download .txt</button>
-                    <button id="shareBtn" style="background: #0077b5; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">🔗 Share</button>
+                    <button id="downloadBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700;">Download</button>
+                    <button id="shareBtn" style="background: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700;">Share</button>
                 </div>
             </div>
-            <textarea id="optimizedResume" style="width: 100%; height: 250px; margin-top: 12px; border-radius: 12px; padding: 15px; border: 1px solid #ddd; background: #fafafa; font-family: 'Courier New', monospace; line-height: 1.6; font-size: 14px;" placeholder="Your professional future starts here..." readonly></textarea>
+            <textarea id="optimizedResume" style="width: 100%; height: 300px; margin-top: 12px; border-radius: 16px; padding: 20px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 14px;" readonly></textarea>
         </div>
 
-        <div id="systemLogs">> CTO Dashboard Online. System waiting for input...</div>
+        <div id="systemLogs">> PraeHire Global Core: Waiting for input...</div>
       </section>
 
       <section id="tab-interview" class="tab-content">
-        <h2>AI Technical Mock Interview</h2>
-        <div id="interviewChat"><p><em>AI: Enter your details or upload a CV to start a tailored interview session...</em></p></div>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="interviewInput" placeholder="Type your response..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-            <button id="sendInterviewBtn" style="background: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold;">Send</button>
+        <h2>Global Mock Interviewer</h2>
+        <div id="interviewChat"></div>
+        <div style="display: flex; gap: 12px;">
+            <input type="text" id="interviewInput" placeholder="Answer the recruiter..." style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
+            <button id="sendInterviewBtn" style="background: #10b981; color: white; border: none; padding: 0 30px; border-radius: 12px; font-weight: 800;">Send</button>
         </div>
       </section>
 
       <section id="tab-apply" class="tab-content">
-        <h2>Lagos Job Market Finder</h2>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-            <input type="text" id="jobSearch" placeholder="Role (e.g. Backend Developer)" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
-            <button id="searchJobsBtn" style="padding: 12px 25px; background: #333; color: white; border-radius: 8px; font-weight: bold;">Search Jobs</button>
+        <h2>Opportunity Finder</h2>
+        <div style="display: flex; gap: 12px; margin-bottom: 25px;">
+            <input type="text" id="jobSearch" placeholder="Role & City (e.g. Java Engineer in Berlin)" style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
+            <button id="searchJobsBtn" style="padding: 0 30px; background: #3b82f6; color: white; border-radius: 12px; font-weight: 800;">Search</button>
         </div>
-        <div style="padding: 30px; background: #f0f2f5; border-radius: 12px; text-align: center; border: 2px dashed #ccc;">
-            <p style="color: #666;">Enter a role above to find active openings in Lagos.</p>
+        <div id="marketStatus" style="padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 20px; text-align: center; border: 2px dashed #334155;">
+            <p>Ready to scan global LinkedIn and Indeed databases.</p>
         </div>
       </section>
     </main>
@@ -125,11 +141,11 @@
       if (!user) { window.location.href = 'login.html'; } 
       else {
         const greeting = document.getElementById('userGreeting');
-        if (greeting) greeting.innerText = `Hello, ${user.email.split('@')[0]}! 👋`;
+        if (greeting) greeting.innerText = `Welcome, ${user.email.split('@')[0]}!`;
       }
     });
 
-    import('./prae_logic.js').then((m) => { console.log("🧠 PraeHire Logic Connected."); });
+    import('./prae_logic.js').then((m) => { console.log("🧠 PraeHire Brain Connected."); });
   </script>
 </body>
 </html>
