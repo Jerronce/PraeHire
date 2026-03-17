@@ -1,5 +1,5 @@
 /**
- * PraeHire Core Brain v4.5 - CTO Jeremiah Adedurin Edition
+ * PraeHire Core Brain v4.5.1 - CTO Jeremiah Adedurin Edition
  * Features: AI Tailoring (v1 Stable), Mock Interviewer, Logs, & Downloads
  */
 
@@ -77,8 +77,8 @@ async function tailorResume() {
     }
 }
 
-// --- 4. INTERVIEWER & ACTIONS ---
-window.downloadAsPDF = function() {
+// --- 4. ACTIONS & INTERVIEWER ---
+function downloadAsPDF() {
     const text = document.getElementById('optimizedResume').value;
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
@@ -86,18 +86,18 @@ window.downloadAsPDF = function() {
     link.download = "Tailored_Resume.txt";
     link.click();
     addLog("💾 Downloaded tailored resume as .txt");
-};
+}
 
-window.shareToLinkedIn = function() {
+function shareToLinkedIn() {
     window.open("https://www.linkedin.com/feed/", "_blank");
     addLog("🌐 LinkedIn feed opened for sharing.");
-};
+}
 
-window.searchJobs = function() {
+function searchJobs() {
     const query = document.getElementById('jobSearch').value;
     addLog(`🔍 Searching for ${query} roles in Lagos...`);
     setTimeout(() => addLog("✅ Simulations: Found 5 roles on LinkedIn."), 1000);
-};
+}
 
 async function sendInterviewAnswer() {
     const input = document.getElementById('interviewInput');
@@ -109,9 +109,17 @@ async function sendInterviewAnswer() {
     addLog("💬 Sent answer to AI Interviewer.");
 }
 
+// --- 5. INITIALIZATION ---
 function init() {
+    console.log("🤝 Establishing UI/Logic Handshake...");
     document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
     document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
     document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
+    document.getElementById('downloadBtn')?.addEventListener('click', downloadAsPDF);
+    document.getElementById('shareBtn')?.addEventListener('click', shareToLinkedIn);
+    document.getElementById('searchJobsBtn')?.addEventListener('click', searchJobs);
+    addLog("✅ System Handshake Complete. Buttons Active.");
 }
-document.addEventListener('DOMContentLoaded', init);
+
+// Run immediately since it's an imported module
+init();

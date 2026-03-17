@@ -47,8 +47,8 @@
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <label><strong>3. AI Optimized Result:</strong></label>
                 <div id="actionButtons" style="display: none; gap: 10px;">
-                    <button onclick="downloadAsPDF()" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📥 Download</button>
-                    <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🔗 Share</button>
+                    <button id="downloadBtn" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📥 Download</button>
+                    <button id="shareBtn" style="background: #0077b5; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🔗 Share</button>
                 </div>
             </div>
             <textarea id="optimizedResume" style="width: 100%; height: 180px; margin-top: 10px; border-radius: 8px; padding: 10px; border: 1px solid #ccc; background: #fdfdfd;" placeholder="AI optimized resume will appear here..." readonly></textarea>
@@ -69,7 +69,7 @@
       <section id="tab-apply" class="tab-content">
         <h2>One-Click Apply Helper</h2>
         <input type="text" id="jobSearch" placeholder="Role (e.g. Frontend Engineer)" style="width: 70%; padding: 10px; margin-bottom: 10px;">
-        <button onclick="searchJobs()" style="padding: 10px; background: #333; color: white; border-radius: 5px;">Search Jobs</button>
+        <button id="searchJobsBtn" style="padding: 10px; background: #333; color: white; border-radius: 5px;">Search Jobs</button>
         <div style="margin-top: 20px; padding: 20px; background: #eee; border-radius: 10px; text-align: center;">
             <p>Job results will populate here.</p>
         </div>
@@ -85,7 +85,7 @@
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
     };
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
@@ -100,7 +100,10 @@
       }
     });
 
-    import('./prae_logic.js').then(() => console.log("🧠 PraeHire Logic Connected."));
+    // CRITICAL: We import and THEN run the init
+    import('./prae_logic.js').then((m) => {
+        console.log("🧠 PraeHire Logic Connected.");
+    });
   </script>
 </body>
 </html>
