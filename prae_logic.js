@@ -1,13 +1,14 @@
 /**
- * PraeHire Core Brain v4.6 - CTO Jeremiah Adedurin Edition
- * Features: AI Tailoring (v1 Stable Force), Mock Interviewer, Logs, & Downloads
- * Version Notes: Forced stable endpoint to bypass caching issues.
+ * PraeHire Core Brain v4.7 - CTO Jeremiah Adedurin Edition
+ * Features: AI Tailoring, Mock Interviewer, Logs, & Downloads
+ * Version Notes: Unified to v1beta for maximum regional compatibility.
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
 
 let resumeFileContent = null;
-const GEMINI_API_KEY = 'AIzaSyBNsc8VmB9PYXQ-vvSofkX9VcJBip_ecCc'; 
+// PASTE YOUR NEW API KEY BELOW
+const GEMINI_API_KEY = 'AIzaSyCzuUBxm8Se-tTJ5DLLHrdD5YsfpzrQpc0'; 
 
 // --- 1. SYSTEM LOGGING ---
 function addLog(message) {
@@ -44,7 +45,7 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 3. AI TAILORING (Forced Stable v1) ---
+// --- 3. AI TAILORING ---
 async function tailorResume() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
@@ -53,12 +54,11 @@ async function tailorResume() {
     if (!resumeFileContent) return alert("Upload Resume first!");
     if (!jobDesc || jobDesc.length < 50) return alert("Paste full Job Description!");
 
-    addLog("🚀 Requesting Gemini 1.5 Flash (Forced Stable v1)...");
+    addLog("🚀 Requesting Gemini 1.5 Flash (v1beta)...");
     output.value = "⏳ Gemini is re-engineering your resume... please wait.";
 
     try {
-        // ULTIMATE FIX: Using the v1 stable endpoint with -latest tag
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -91,15 +91,15 @@ async function sendInterviewAnswer() {
     input.value = "";
     addLog("💬 Sent answer to AI Interviewer...");
 
-  try {
-    // Structure change: v1beta + models/gemini-1.5-flash
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: `Professional Resume Re-engineer task. CV: ${resumeFileContent}. Job: ${jobDesc}` }] }]
-        })
-    });
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `You are a technical interviewer. Based on this CV: ${resumeFileContent}, the candidate said: "${val}". Give feedback and ask the next question.` }] }]
+            })
+        });
+
         const data = await response.json();
         const aiMsg = data.candidates[0].content.parts[0].text;
         chat.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
