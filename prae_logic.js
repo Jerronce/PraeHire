@@ -41,40 +41,50 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 2. AI TAILORING (Direct API Bypass Mode) ---
 async function tailorResume() {
     console.log("🖱️ Tailor Button Triggered.");
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     
-    if (!resumeFileContent) return alert("Please upload a resume (PDF) first!");
-    if (!jobDesc || jobDesc.trim().length < 20) return alert("Please paste a more detailed job description.");
+    // VALIDATION: Ensure we have enough "fuel" for the AI
+    if (!resumeFileContent) return alert("Please upload a resume first!");
+    if (!jobDesc || jobDesc.length < 50) {
+        return alert("The Job Description is too short! Please paste the full 'About the Job' section.");
+    }
 
     output.value = "⏳ Gemini 1.5 Flash is re-engineering your resume... please wait.";
 
     try {
-        // BYPASSING FIREBASE CLOUD FUNCTIONS TO AVOID BLAZE PLAN ERRORS
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are an expert career coach. Tailor this resume to match the job description perfectly. 
-                RESUME: ${resumeFileContent} 
-                JOB DESCRIPTION: ${jobDesc}` }] }]
+                contents: [{
+                    parts: [{
+                        text: `You are a professional resume re-engineer. 
+                        RE-ENGINEER this resume: ${resumeFileContent} 
+                        TO MATCH this job: ${jobDesc}. 
+                        Keep the output professional and ready to send.`
+                    }]
+                }]
             })
         });
 
         const data = await response.json();
-        
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
+
+        // LOG THE DATA: This helps us see the error in the console
+        console.log("🤖 AI Data Received:", data);
+
+        if (data.candidates && data.candidates[0].content) {
             output.value = data.candidates[0].content.parts[0].text;
-            console.log("🤖 AI Response Received.");
+        } else if (data.error) {
+            output.value = `❌ API Error: ${data.error.message}`;
         } else {
-            throw new Error("Invalid API response format");
+            output.value = "❌ AI returned an empty response. Check the console.";
         }
     } catch (err) {
-        console.error("❌ AI Connection Error:", err);
-        output.value = "❌ Connection Error. Ensure your Gemini API Key is active and restricted to this domain.";
+        console.error("❌ Catch Block Error:", err);
+        output.value = "❌ Connection failed. Check your internet or API key.";
     }
 }
 
