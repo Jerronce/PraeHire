@@ -1,6 +1,7 @@
 /**
- * PraeHire Core Brain v6.0 - Global Architect Edition
- * Features: Visual Score Bar, Global Job Search, Secure API
+ * PraeHire Core Brain v6.1 - Global Architect Edition
+ * Features: Visual Score Bar, Global Job Search, Fixed Button Binding
+ * Security: Uses GitHub Secrets
  */
 
 console.log("🧠 PraeHire Logic: Global Online.");
@@ -15,8 +16,8 @@ function addLog(message) {
     logBox.scrollTop = logBox.scrollHeight;
 }
 
-// --- PDF HANDLER ---
-async function handleFileUpload(e) {
+// --- 1. PDF HANDLER (Global) ---
+window.handleFileUpload = async function(e) {
     const file = e.target.files[0];
     if (!file) return;
     document.getElementById('fileName').innerText = `📄 ${file.name}`;
@@ -42,8 +43,8 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- AI TAILORING & VISUAL SCORING ---
-async function tailorResume() {
+// --- 2. AI TAILORING & VISUAL SCORING (Global) ---
+window.tailorResume = async function() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     const scoreBar = document.getElementById('progressBar');
@@ -60,7 +61,10 @@ async function tailorResume() {
         addLog("📝 Building from Career Profile...");
     }
 
-    if (!GEMINI_API_KEY) { addLog("⚠️ Waiting for Cloud Secret..."); return; }
+    if (!GEMINI_API_KEY) { 
+        addLog("⚠️ Key missing. Deploying via GitHub Actions..."); 
+        return alert("Environment starting. Try again in 60 seconds."); 
+    }
     if (!jobDesc) return alert("Paste a Job Description!");
 
     addLog("🚀 AI Engine: Generating World-Class Resume...");
@@ -110,21 +114,31 @@ async function tailorResume() {
         }
     } catch (err) {
         addLog("❌ Connection Error.");
+        output.classList.remove('loading-pulse');
     }
 }
 
-// --- GLOBAL JOB SEARCH ---
-function searchJobs() {
+// --- 3. GLOBAL JOB SEARCH (Global) ---
+window.searchJobs = function() {
     const query = document.getElementById('jobSearch').value;
     if(!query) return alert("Enter role and location (e.g. Developer in NYC)");
     addLog(`🔍 Searching Global Market: ${query}...`);
     window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}`, "_blank");
 }
 
-// --- INITIALIZATION ---
-function init() {
-    document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
-    document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
+// --- 4. INITIALIZATION ---
+window.init = function() {
+    console.log("🤝 Establishing UI/Logic Handshake...");
+    
+    // Binding listeners manually to ensure they work in Module scope
+    document.getElementById('resumeFile')?.addEventListener('change', window.handleFileUpload);
+    
+    const tailorBtn = document.getElementById('tailorResumeBtn');
+    if (tailorBtn) tailorBtn.onclick = window.tailorResume;
+
+    const searchBtn = document.getElementById('searchJobsBtn');
+    if (searchBtn) searchBtn.onclick = window.searchJobs;
+
     document.getElementById('downloadBtn')?.addEventListener('click', () => {
         const text = document.getElementById('optimizedResume').value;
         const blob = new Blob([text], { type: 'text/plain' });
@@ -133,8 +147,11 @@ function init() {
         link.download = "PraeHire_Resume.txt";
         link.click();
     });
-    document.getElementById('searchJobsBtn')?.addEventListener('click', searchJobs);
+
     document.getElementById('shareBtn')?.addEventListener('click', () => window.open("https://linkedin.com", "_blank"));
+    
+    addLog("✅ System Handshake Complete. Buttons Active.");
 }
 
-init();
+// Trigger init
+window.init();

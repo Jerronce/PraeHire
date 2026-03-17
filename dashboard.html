@@ -7,17 +7,16 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
-    /* GLOBAL DARK THEME FIX */
-    body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
-    h2, h3, strong { color: #ffffff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-    label { color: #cbd5e1 !important; }
+    /* GLOBAL DARK THEME */
+    body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
+    h2, h3, strong { color: #ffffff !important; }
     
     .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
-    .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #1e293b; color: #94a3b8; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-    .tab-btn.active { background: #3b82f6; color: white; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.5); }
+    .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #1e293b; color: #94a3b8; border-radius: 8px; font-weight: bold; }
+    .tab-btn.active { background: #3b82f6; color: white; }
     
-    .tab-content { display: none; animation: fadeIn 0.4s ease-out; }
-    .tab-content.active { display: block; }
+    .tab-content { display: none; padding: 20px 0; }
+    .tab-content.active { display: block; animation: fadeIn 0.4s ease-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     /* VISUAL SCORE BAR */
@@ -25,24 +24,21 @@
     .progress-bg { background: #334155; height: 12px; border-radius: 10px; overflow: hidden; margin-top: 8px; }
     #progressBar { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 1s ease-in-out; }
 
-    /* MODERN UI ELEMENTS */
     .upload-box { border: 2px dashed #3b82f6; padding: 30px; border-radius: 16px; text-align: center; background: rgba(30, 41, 59, 0.5); }
-    .manual-form { background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-top: 15px; }
-    .manual-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; }
+    .manual-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
 
     @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
     .loading-pulse { animation: pulse 2s infinite; border-color: #3b82f6 !important; }
 
-    #interviewChat { height: 350px; overflow-y: auto; border: 1px solid #334155; padding: 20px; background: #1e293b; border-radius: 16px; margin-bottom: 10px; color: #e2e8f0; }
-    #systemLogs { margin-top: 20px; background: #000; color: #10b981; padding: 15px; border-radius: 12px; font-family: 'Fira Code', monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #3b82f6; opacity: 0.9; }
+    #systemLogs { margin-top: 20px; background: #000; color: #10b981; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #3b82f6; }
   </style>
 </head>
 <body>
   <div class="app" style="max-width: 900px; margin: auto; padding: 20px;">
     <main class="content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div id="userGreeting" style="font-size: 28px; font-weight: 800; letter-spacing: -1px;">Hello! 👋</div>
-        <button id="logoutBtn" style="background: transparent; color: #ef4444; border: 2px solid #ef4444; cursor: pointer; padding: 8px 20px; border-radius: 10px; font-weight: 700; transition: 0.3s;">Logout</button>
+        <div id="userGreeting" style="font-size: 28px; font-weight: 800;">Welcome! 👋</div>
+        <button id="logoutBtn" style="background: transparent; color: #ef4444; border: 2px solid #ef4444; cursor: pointer; padding: 8px 20px; border-radius: 10px; font-weight: 700;">Logout</button>
       </div>
 
       <nav class="tab-nav" style="margin-top: 30px;">
@@ -53,33 +49,32 @@
 
       <section id="tab-resume" class="tab-content active">
         <h2>AI Resume Optimization</h2>
-        <p style="color: #94a3b8; margin-bottom: 25px;">Build a world-class resume or optimize your existing PDF.</p>
         
         <div class="upload-box">
-            <label for="resumeFile" style="cursor: pointer; color: #3b82f6; font-weight: 800; font-size: 18px;">
-                📁 Upload Professional CV (PDF)
+            <label for="resumeFile" style="cursor: pointer; color: #3b82f6; font-weight: 800;">
+                📁 Upload CV (PDF)
             </label>
             <input type="file" id="resumeFile" accept=".pdf" style="display: none;">
             <p id="fileName" style="font-size: 13px; color: #64748b; margin-top: 10px;">Ready to scan...</p>
         </div>
 
-        <div id="manualEntryForm" class="manual-form">
-            <p style="font-weight: 700; margin-bottom: 15px; color: #cbd5e1;">Manual Career Profile:</p>
+        <div class="manual-form" style="background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-top: 15px;">
+            <p style="font-weight: 700; color: #cbd5e1;">Manual Profile:</p>
             <input type="text" id="userName" class="manual-input" placeholder="Full Name">
-            <input type="text" id="userTitle" class="manual-input" placeholder="Target Role (e.g. Cloud Engineer)">
-            <textarea id="userExperience" class="manual-input" style="height: 100px;" placeholder="Paste your bio, skills, or old resume text here..."></textarea>
+            <input type="text" id="userTitle" class="manual-input" placeholder="Target Role">
+            <textarea id="userExperience" class="manual-input" style="height: 100px;" placeholder="Paste bio or skills..."></textarea>
         </div>
 
         <div style="margin: 25px 0;">
             <label><strong>Target Job Description:</strong></label>
-            <textarea id="jobDescInput" style="width: 100%; height: 140px; margin-top: 10px; border-radius: 12px; padding: 15px; border: 1px solid #334155; background: #1e293b; color: white;" placeholder="Paste the 'About the Role' section from LinkedIn..."></textarea>
+            <textarea id="jobDescInput" style="width: 100%; height: 140px; margin-top: 10px; border-radius: 12px; padding: 15px; border: 1px solid #334155; background: #1e293b; color: white;" placeholder="Paste the Job Description here..."></textarea>
         </div>
 
-        <button id="tailorResumeBtn" style="background: #3b82f6; color: white; padding: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: 800; width: 100%; font-size: 17px;">🚀 Analyze & Tailor My Career</button>
+        <button id="tailorResumeBtn" onclick="tailorResume()" style="background: #3b82f6; color: white; padding: 18px; border: none; border-radius: 12px; cursor: pointer; font-weight: 800; width: 100%; font-size: 17px;">🚀 Analyze & Tailor My Career</button>
         
         <div id="scoreSection" class="score-container">
             <div style="display: flex; justify-content: space-between;">
-                <span style="font-weight: 800; color: #fff;">MATCH MATCH SCORE</span>
+                <span style="font-weight: 800; color: #fff;">MATCH SCORE</span>
                 <span id="scoreText" style="color: #10b981; font-weight: 800;">0%</span>
             </div>
             <div class="progress-bg"><div id="progressBar"></div></div>
@@ -94,29 +89,17 @@
                     <button id="shareBtn" style="background: #0ea5e9; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700;">Share</button>
                 </div>
             </div>
-            <textarea id="optimizedResume" style="width: 100%; height: 300px; margin-top: 12px; border-radius: 16px; padding: 20px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-family: 'Fira Code', monospace; line-height: 1.7; font-size: 14px;" readonly></textarea>
+            <textarea id="optimizedResume" style="width: 100%; height: 300px; margin-top: 12px; border-radius: 16px; padding: 20px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-family: monospace; line-height: 1.7; font-size: 14px;" readonly></textarea>
         </div>
 
         <div id="systemLogs">> PraeHire Global Core: Waiting for input...</div>
       </section>
 
-      <section id="tab-interview" class="tab-content">
-        <h2>Global Mock Interviewer</h2>
-        <div id="interviewChat"></div>
-        <div style="display: flex; gap: 12px;">
-            <input type="text" id="interviewInput" placeholder="Answer the recruiter..." style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
-            <button id="sendInterviewBtn" style="background: #10b981; color: white; border: none; padding: 0 30px; border-radius: 12px; font-weight: 800;">Send</button>
-        </div>
-      </section>
-
       <section id="tab-apply" class="tab-content">
         <h2>Opportunity Finder</h2>
         <div style="display: flex; gap: 12px; margin-bottom: 25px;">
-            <input type="text" id="jobSearch" placeholder="Role & City (e.g. Java Engineer in Berlin)" style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
-            <button id="searchJobsBtn" style="padding: 0 30px; background: #3b82f6; color: white; border-radius: 12px; font-weight: 800;">Search</button>
-        </div>
-        <div id="marketStatus" style="padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 20px; text-align: center; border: 2px dashed #334155;">
-            <p>Ready to scan global LinkedIn and Indeed databases.</p>
+            <input type="text" id="jobSearch" placeholder="Role & City (e.g. Developer in NYC)" style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
+            <button id="searchJobsBtn" onclick="searchJobs()" style="padding: 0 30px; background: #3b82f6; color: white; border-radius: 12px; font-weight: 800;">Search</button>
         </div>
       </section>
     </main>
@@ -130,7 +113,6 @@
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
-        if(event) event.currentTarget.classList.add('active');
     };
 
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
@@ -145,7 +127,7 @@
       }
     });
 
-    import('./prae_logic.js').then((m) => { console.log("🧠 PraeHire Brain Connected."); });
+    import('./prae_logic.js').then((m) => { console.log("🧠 PraeHire Logic Connected."); });
   </script>
 </body>
 </html>
