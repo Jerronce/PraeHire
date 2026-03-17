@@ -1,27 +1,22 @@
 /**
- * PraeHire Core Brain v3.0
- * Authorized by: CTO Jeremiah Adedurin
+ * PraeHire Core Brain v4.0 - CTO Jeremiah Adedurin Edition
+ * Features: AI Tailoring, Mock Interviewer, & Auto-Apply Helper
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
 
 let resumeFileContent = null;
+const GEMINI_API_KEY = 'YAIzaSyDPvTmydPBF8HwI6f6ftkB6G8haw11hT-Y'; // ⚠️ CTO: Paste your key from AI Studio here
 
 // --- 1. PDF PROCESSING ENGINE ---
 async function handleFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
     
-    console.log("📄 Processing File:", file.name);
     const reader = new FileReader();
-    
     reader.onload = async (event) => {
         try {
             const typedarray = new Uint8Array(event.target.result);
-            // Verify pdfjsLib is loaded from CDN
-            if (typeof pdfjsLib === 'undefined') {
-                throw new Error("PDF Library not loaded. Check dashboard.html head.");
-            }
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
             let text = "";
             for (let i = 1; i <= pdf.numPages; i++) {
@@ -30,74 +25,86 @@ async function handleFileUpload(e) {
                 text += content.items.map(s => s.str).join(" ") + "\n";
             }
             resumeFileContent = text;
-            console.log("✅ Resume text extracted successfully.");
-            alert("✅ Resume Loaded! Ready for AI Tailoring.");
+            alert("✅ Resume Loaded! Ready for AI Tailoring and Interviews.");
         } catch (err) {
             console.error("❌ PDF Engine Error:", err);
-            alert("Error reading PDF. Please try a different version.");
+            alert("Error reading PDF.");
         }
     };
     reader.readAsArrayBuffer(file);
 }
 
-// --- 2. AI TAILORING INTERFACE ---
+// --- 2. AI TAILORING (Frontend Bypass Mode) ---
 async function tailorResume() {
-    console.log("🖱️ Tailor Button Triggered.");
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     
-    if (!resumeFileContent) {
-        return alert("Please upload a resume (PDF) first!");
-    }
-    if (!jobDesc || jobDesc.trim().length < 20) {
-        return alert("Please paste a more detailed job description.");
-    }
+    if (!resumeFileContent) return alert("Upload Resume first!");
+    if (!jobDesc) return alert("Paste Job Description!");
 
-    output.value = "⏳ Gemini 1.5 Flash is re-engineering your resume... please wait.";
+    output.value = "⏳ Gemini 1.5 Flash is re-engineering your resume...";
 
     try {
-        const response = await fetch('https://us-central1-praehire.cloudfunctions.net/tailorResume', {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                resumeText: resumeFileContent, 
-                jobDescription: jobDesc 
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Tailor this resume for this job description. Keep it professional. 
+                RESUME: ${resumeFileContent} 
+                JOB: ${jobDesc}` }] }]
             })
         });
-        
-        if (!response.ok) throw new Error(`Server responded with ${response.status}`);
-        
         const data = await response.json();
-        console.log("🤖 AI Response Received.");
-        output.value = data.tailoredResume || "AI finished, but response body was empty.";
+        output.value = data.candidates[0].content.parts[0].text;
     } catch (err) {
-        console.error("❌ AI Connection Error:", err);
-        output.value = "❌ Connection Error. Check your Firebase Cloud Functions log or your Blaze Plan status.";
+        output.value = "❌ AI Error. Check your API Key.";
     }
 }
 
-// --- 3. SYSTEM INITIALIZATION ---
+// --- 3. AI MOCK INTERVIEWER ---
+async function sendInterviewAnswer() {
+    const userInput = document.getElementById('interviewInput');
+    const chatBox = document.getElementById('interviewChat');
+    const answer = userInput.value;
+
+    if (!answer) return;
+
+    // Append User Message
+    chatBox.innerHTML += `<p><strong>You:</strong> ${answer}</p>`;
+    userInput.value = "";
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `You are a tough technical recruiter. 
+                Based on this resume: ${resumeFileContent}, 
+                the user said: "${answer}". 
+                Give feedback and ask the next follow-up interview question.` }] }]
+            })
+        });
+        const data = await response.json();
+        const aiMsg = data.candidates[0].content.parts[0].text;
+        chatBox.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    } catch (err) {
+        chatBox.innerHTML += `<p style="color:red;">❌ Interviewer offline. Check API Key.</p>`;
+    }
+}
+
+// --- 4. AUTO-APPLY HELPER ---
+function searchJobs() {
+    const query = document.getElementById('jobSearch').value;
+    alert(`Searching for "${query}" on LinkedIn and Indeed... (API integration in progress)`);
+    // In v4.1 we will link this to the LinkedIn Job Search API
+}
+
+// --- 5. INITIALIZATION ---
 function init() {
-    console.log("🤝 Establishing UI/Logic Handshake...");
-    const fileInput = document.getElementById('resumeFile');
-    const tailorBtn = document.getElementById('tailorResumeBtn');
-
-    if (fileInput) {
-        fileInput.onchange = handleFileUpload;
-        console.log("✅ File Upload Listener: Active.");
-    }
-
-    if (tailorBtn) {
-        tailorBtn.onclick = tailorResume;
-        console.log("✅ Tailor Button Listener: Active.");
-    } else {
-        console.error("⚠️ CRITICAL: Could not find 'tailorResumeBtn' in HTML.");
-    }
+    document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
+    document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
+    document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
 }
 
-// Global Execution
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-} else {
-    init();
-}
+document.addEventListener('DOMContentLoaded', init);
