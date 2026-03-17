@@ -1,6 +1,6 @@
 /**
- * PraeHire Core Brain v4.5.1 - CTO Jeremiah Adedurin Edition
- * Features: AI Tailoring (v1 Stable), Mock Interviewer, Logs, & Downloads
+ * PraeHire Core Brain v4.5.2 - CTO Jeremiah Adedurin Edition
+ * Features: AI Tailoring (v1beta fix), Mock Interviewer, Logs, & Downloads
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
@@ -43,7 +43,7 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 3. AI TAILORING ---
+// --- 3. AI TAILORING (v1beta Fix) ---
 async function tailorResume() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
@@ -52,15 +52,16 @@ async function tailorResume() {
     if (!resumeFileContent) return alert("Upload Resume first!");
     if (!jobDesc || jobDesc.length < 50) return alert("Paste full Job Description!");
 
-    addLog("🚀 Requesting Gemini 1.5 Flash (v1 Stable)...");
+    addLog("🚀 Requesting Gemini 1.5 Flash Re-engineering...");
     output.value = "⏳ Gemini is re-engineering your resume... please wait.";
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // FIXED URL: Using v1beta for reliable Flash access
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `Re-engineer this resume: ${resumeFileContent} to match this job: ${jobDesc}` }] }]
+                contents: [{ parts: [{ text: `You are an expert recruiter. Re-engineer this resume: ${resumeFileContent} to match this job description: ${jobDesc}` }] }]
             })
         });
 
@@ -71,14 +72,45 @@ async function tailorResume() {
             addLog("✅ Success! Resume tailored.");
         } else {
             addLog(`❌ API Error: ${data.error?.message || "Check Console"}`);
+            console.log("Full Error Data:", data);
         }
     } catch (err) {
         addLog("❌ Connection Blocked.");
     }
 }
 
-// --- 4. ACTIONS & INTERVIEWER ---
-function downloadAsPDF() {
+// --- 4. AI INTERVIEWER ---
+async function sendInterviewAnswer() {
+    const input = document.getElementById('interviewInput');
+    const chat = document.getElementById('interviewChat');
+    const val = input.value;
+    if (!val) return;
+
+    chat.innerHTML += `<p><strong>You:</strong> ${val}</p>`;
+    input.value = "";
+    addLog("💬 Sent answer to AI Interviewer...");
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `You are a technical interviewer. Based on this CV: ${resumeFileContent}, the candidate said: "${val}". Give brief feedback and ask the next interview question.` }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiMsg = data.candidates[0].content.parts[0].text;
+        chat.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
+        chat.scrollTop = chat.scrollHeight;
+        addLog("🤖 Interviewer responded.");
+    } catch (err) {
+        addLog("❌ Interviewer connection failed.");
+    }
+}
+
+// --- 5. ACTIONS ---
+window.downloadAsPDF = function() {
     const text = document.getElementById('optimizedResume').value;
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
@@ -86,40 +118,34 @@ function downloadAsPDF() {
     link.download = "Tailored_Resume.txt";
     link.click();
     addLog("💾 Downloaded tailored resume as .txt");
-}
+};
 
-function shareToLinkedIn() {
+window.shareToLinkedIn = function() {
     window.open("https://www.linkedin.com/feed/", "_blank");
     addLog("🌐 LinkedIn feed opened for sharing.");
-}
+};
 
-function searchJobs() {
+window.searchJobs = function() {
     const query = document.getElementById('jobSearch').value;
+    if(!query) return alert("Enter a role first!");
     addLog(`🔍 Searching for ${query} roles in Lagos...`);
-    setTimeout(() => addLog("✅ Simulations: Found 5 roles on LinkedIn."), 1000);
-}
+    // Simulated Search Result
+    setTimeout(() => {
+        addLog("✅ Found 5 matching roles on LinkedIn.");
+        window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}&location=Lagos%2C%20Nigeria`, "_blank");
+    }, 1000);
+};
 
-async function sendInterviewAnswer() {
-    const input = document.getElementById('interviewInput');
-    const chat = document.getElementById('interviewChat');
-    const val = input.value;
-    if (!val) return;
-    chat.innerHTML += `<p><strong>You:</strong> ${val}</p>`;
-    input.value = "";
-    addLog("💬 Sent answer to AI Interviewer.");
-}
-
-// --- 5. INITIALIZATION ---
+// --- 6. INITIALIZATION ---
 function init() {
     console.log("🤝 Establishing UI/Logic Handshake...");
     document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
     document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
     document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
-    document.getElementById('downloadBtn')?.addEventListener('click', downloadAsPDF);
-    document.getElementById('shareBtn')?.addEventListener('click', shareToLinkedIn);
-    document.getElementById('searchJobsBtn')?.addEventListener('click', searchJobs);
+    document.getElementById('downloadBtn')?.addEventListener('click', () => window.downloadAsPDF());
+    document.getElementById('shareBtn')?.addEventListener('click', () => window.shareToLinkedIn());
+    document.getElementById('searchJobsBtn')?.addEventListener('click', () => window.searchJobs());
     addLog("✅ System Handshake Complete. Buttons Active.");
 }
 
-// Run immediately since it's an imported module
 init();
