@@ -1,7 +1,7 @@
 /**
- * PraeHire Core Brain v5.0 - CTO Jeremiah Adedurin Edition
- * Features: Secure Key Logic, AI Tailoring, Match Scoring, & Mock Interviewer
- * Security: Hardcoded keys REMOVED for GitHub Secrets integration.
+ * PraeHire Core Brain v5.5 - CTO Jeremiah Adedurin Edition
+ * Features: AI Resume Builder (Manual Entry), Tailoring, Match Scoring, Pulse UI
+ * Security: Uses GitHub Secrets (process.env.GEMINI_API_KEY)
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
@@ -9,7 +9,6 @@ console.log("🧠 PraeHire Brain: System Online.");
 let resumeFileContent = null;
 
 // --- SECURE KEY RETRIEVAL ---
-// Use GitHub Secrets to inject this during build/deploy
 const GEMINI_API_KEY = typeof process !== 'undefined' ? process.env.GEMINI_API_KEY : ''; 
 
 // --- 1. SYSTEM LOGGING ---
@@ -25,7 +24,9 @@ function addLog(message) {
 async function handleFileUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
+    document.getElementById('fileName').innerText = `📄 ${file.name}`;
     addLog(`📄 Processing File: ${file.name}`);
+    
     const reader = new FileReader();
     reader.onload = async (event) => {
         try {
@@ -39,7 +40,7 @@ async function handleFileUpload(e) {
             }
             resumeFileContent = text;
             addLog("✅ Resume text extracted successfully.");
-            alert("✅ Resume Loaded!");
+            alert("✅ Resume PDF Loaded!");
         } catch (err) {
             addLog("❌ PDF Engine Error.");
         }
@@ -47,21 +48,33 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
-// --- 3. AI TAILORING & MATCH SCORING ---
+// --- 3. AI TAILORING & BUILDER ---
 async function tailorResume() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     const actions = document.getElementById('actionButtons');
     
-    if (!GEMINI_API_KEY) {
-        addLog("⚠️ Security: API Key missing. Ensure GitHub Secrets are set.");
-        return alert("CTO Note: API Key is not set in this build.");
+    // Manual Builder Logic
+    let inputContext = resumeFileContent;
+    if (!inputContext) {
+        const name = document.getElementById('userName').value;
+        const title = document.getElementById('userTitle').value;
+        const exp = document.getElementById('userExperience').value;
+        
+        if (!name || !exp) return alert("Please upload a PDF or enter your Name & Experience to build a resume!");
+        inputContext = `Candidate Name: ${name}, Target Title: ${title}, Background: ${exp}`;
+        addLog("📝 No PDF detected. Using Manual Entry to build resume...");
     }
-    if (!resumeFileContent) return alert("Upload Resume first!");
-    if (!jobDesc || jobDesc.length < 50) return alert("Paste full Job Description!");
 
-    addLog("🚀 Requesting Gemini 1.5 Flash (v1beta)...");
-    output.value = "⏳ Gemini is re-engineering your resume... please wait.";
+    if (!GEMINI_API_KEY) {
+        addLog("⚠️ Security: API Key missing from GitHub Secrets.");
+        return alert("CTO Note: App is in Secure Mode. Deployment pending.");
+    }
+    if (!jobDesc || jobDesc.length < 50) return alert("Please paste a full Job Description!");
+
+    addLog("🚀 Requesting Gemini 1.5 Flash Re-engineering...");
+    output.value = "⏳ Gemini is re-engineering your profile... please wait.";
+    output.classList.add('loading-pulse');
 
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
@@ -69,30 +82,38 @@ async function tailorResume() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: `
-                    Task: 1. Re-engineer this resume: ${resumeFileContent} to match this job: ${jobDesc}.
-                    2. Provide a Match Score out of 100 and a 1-sentence analysis.
-                    Format the analysis as: [SCORE] XX/100 | [ANALYSIS] Your text here.
-                    Return the tailored resume text after the score.` 
+                    TASK: You are a Master Technical Recruiter.
+                    SOURCE DATA: ${inputContext}
+                    TARGET JOB: ${jobDesc}
+                    
+                    INSTRUCTION:
+                    1. If source is raw info, write a full professional resume.
+                    2. If source is a resume, optimize it for the target job.
+                    3. Start the response with [SCORE] XX/100 and a 1-sentence [ANALYSIS].
+                    4. Return the full resume text in professional Markdown format.` 
                 }] }]
             })
         });
 
         const data = await response.json();
+        output.classList.remove('loading-pulse');
+
         if (data.candidates && data.candidates[0].content) {
-            const rawResult = data.candidates[0].content.parts[0].text;
+            const result = data.candidates[0].content.parts[0].text;
+            output.value = result;
             
-            // Extract Score for the Logs
-            const scoreMatch = rawResult.match(/\[SCORE\]\s*(\d+)\/100/);
+            // Extract Score for Logs
+            const scoreMatch = result.match(/\[SCORE\]\s*(\d+)\/100/);
             const score = scoreMatch ? scoreMatch[1] : "??";
             
-            output.value = rawResult;
             actions.style.display = 'flex';
-            addLog(`📊 MATCH SCORE: ${score}%`);
-            addLog("✅ Success! Resume tailored.");
+            addLog(`📊 RESUME MATCH SCORE: ${score}%`);
+            addLog("✅ Success! Resume re-engineered.");
         } else {
             addLog(`❌ API Error: ${data.error?.message || "Check Console"}`);
         }
     } catch (err) {
+        output.classList.remove('loading-pulse');
         addLog("❌ Connection Blocked.");
     }
 }
@@ -113,7 +134,7 @@ async function sendInterviewAnswer() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: `Recruiter Interview: Resume: ${resumeFileContent}. User said: "${val}". Give feedback and ask next question.` }] }]
+                contents: [{ parts: [{ text: `Technical Recruiter Interview. Resume Data: ${resumeFileContent || "Manual Entry Used"}. User Answer: "${val}". Give feedback and ask next question.` }] }]
             })
         });
 
@@ -128,39 +149,41 @@ async function sendInterviewAnswer() {
 }
 
 // --- 5. ACTIONS ---
-window.downloadAsPDF = function() {
+function downloadAsPDF() {
     const text = document.getElementById('optimizedResume').value;
     const blob = new Blob([text], { type: 'text/plain' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = "Tailored_Resume_PraeHire.txt";
+    link.download = "PraeHire_Tailored_Resume.txt";
     link.click();
-    addLog("💾 Saved tailored resume as .txt");
-};
+    addLog("💾 Downloaded tailored resume.");
+}
 
-window.shareToLinkedIn = function() {
+function shareToLinkedIn() {
     window.open("https://www.linkedin.com/feed/", "_blank");
     addLog("🌐 LinkedIn feed opened.");
-};
+}
 
-window.searchJobs = function() {
+function searchJobs() {
     const query = document.getElementById('jobSearch').value;
     if(!query) return alert("Enter a role first!");
-    addLog(`🔍 Searching Lagos for ${query}...`);
+    addLog(`🔍 Searching Lagos for ${query} roles...`);
     setTimeout(() => {
         addLog("✅ Results ready on LinkedIn.");
         window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}&location=Lagos%2C%20Nigeria`, "_blank");
     }, 1000);
-};
+}
 
 // --- 6. INITIALIZATION ---
 function init() {
+    console.log("🤝 Establishing UI/Logic Handshake...");
     document.getElementById('resumeFile')?.addEventListener('change', handleFileUpload);
     document.getElementById('tailorResumeBtn')?.addEventListener('click', tailorResume);
     document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
-    document.getElementById('downloadBtn')?.addEventListener('click', () => window.downloadAsPDF());
-    document.getElementById('shareBtn')?.addEventListener('click', () => window.shareToLinkedIn());
-    document.getElementById('searchJobsBtn')?.addEventListener('click', () => window.searchJobs());
+    document.getElementById('downloadBtn')?.addEventListener('click', downloadAsPDF);
+    document.getElementById('shareBtn')?.addEventListener('click', shareToLinkedIn);
+    document.getElementById('searchJobsBtn')?.addEventListener('click', searchJobs);
+    addLog("✅ System Handshake Complete. Buttons Active.");
 }
 
 init();

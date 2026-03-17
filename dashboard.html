@@ -8,70 +8,99 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <style>
     .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-    .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: #f0f0f0; border-radius: 5px; font-weight: bold; }
-    .tab-btn.active { background: #007bff; color: white; }
-    .tab-content { display: none; animation: fadeIn 0.3s; }
+    .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #f0f0f0; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .tab-btn.active { background: #007bff; color: white; box-shadow: 0 4px 12px rgba(0,123,255,0.3); }
+    .tab-content { display: none; animation: fadeIn 0.4s; }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    #interviewChat { height: 250px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; background: #fff; border-radius: 8px; margin-bottom: 10px; }
-    #systemLogs { margin-top: 20px; background: #1e1e1e; color: #00ff00; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; height: 100px; overflow-y: auto; border: 1px solid #444; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Modern Upload Styling */
+    .upload-box { border: 2px dashed #007bff; padding: 25px; border-radius: 12px; text-align: center; background: #f8faff; transition: 0.3s; }
+    .upload-box:hover { background: #f0f5ff; border-color: #0056b3; }
+    
+    /* Manual Form Styling */
+    .manual-form { background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #e0e0e0; margin-top: 15px; }
+    .manual-input { width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #ddd; font-family: inherit; }
+
+    /* Result Pulse Animation */
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+    .loading-pulse { animation: pulse 1.5s infinite; border-color: #007bff !important; box-shadow: 0 0 15px rgba(0,123,255,0.2); }
+
+    #interviewChat { height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 15px; background: #fff; border-radius: 12px; margin-bottom: 10px; }
+    #systemLogs { margin-top: 20px; background: #1a1a1a; color: #00ff00; padding: 12px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #00ff00; }
   </style>
 </head>
 <body>
   <div class="app">
     <main class="content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div id="userGreeting" class="greeting" style="font-size: 24px; font-weight: bold;">Hello! 👋</div>
-        <button id="logoutBtn" style="background: transparent; color: red; border: 1px solid red; cursor: pointer; padding: 5px 15px; border-radius: 5px;">Logout</button>
+        <div id="userGreeting" class="greeting" style="font-size: 26px; font-weight: 800; color: #1a1a1a;">Hello! 👋</div>
+        <button id="logoutBtn" style="background: transparent; color: #ff4d4d; border: 2px solid #ff4d4d; cursor: pointer; padding: 8px 18px; border-radius: 8px; font-weight: bold;">Logout</button>
       </div>
 
-      <nav class="tab-nav" style="margin-top: 20px;">
+      <nav class="tab-nav" style="margin-top: 25px;">
         <button class="tab-btn active" onclick="openTab('tab-resume')">Resume Tailor</button>
         <button class="tab-btn" onclick="openTab('tab-interview')">AI Interviewer</button>
         <button class="tab-btn" onclick="openTab('tab-apply')">Auto-Apply Helper</button>
       </nav>
 
       <section id="tab-resume" class="tab-content active">
-        <h2 style="color: #333;">AI Resume Re-engineering</h2>
-        <div style="margin: 15px 0;">
-            <label><strong>1. Upload Resume (PDF):</strong></label><br>
-            <input type="file" id="resumeFile" accept=".pdf" style="margin-top: 10px;">
-        </div>
-        <div style="margin: 15px 0;">
-            <label><strong>2. Job Description:</strong></label><br>
-            <textarea id="jobDescInput" style="width: 100%; height: 120px; margin-top: 10px; border-radius: 8px; padding: 10px; border: 1px solid #ccc;" placeholder="Paste Job Description here..."></textarea>
-        </div>
-        <button id="tailorResumeBtn" type="button" style="background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; width: 100%;">Tailor Resume with AI</button>
+        <h2 style="color: #1a1a1a; margin-bottom: 5px;">AI Resume Re-engineering</h2>
+        <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Upload a PDF or enter your details manually below.</p>
         
-        <div style="margin-top: 20px;">
+        <div class="upload-box">
+            <label for="resumeFile" style="cursor: pointer; color: #007bff; font-weight: bold; font-size: 16px;">
+                📁 Click to Upload Resume (PDF)
+            </label>
+            <input type="file" id="resumeFile" accept=".pdf" style="display: none;">
+            <p id="fileName" style="font-size: 12px; color: #888; margin-top: 8px;">No file selected</p>
+        </div>
+
+        <div id="manualEntryForm" class="manual-form">
+            <p style="font-weight: bold; margin-bottom: 12px; font-size: 15px; color: #333;">Or Build From Scratch:</p>
+            <input type="text" id="userName" class="manual-input" placeholder="Your Full Name">
+            <input type="text" id="userTitle" class="manual-input" placeholder="Current or Target Title (e.g. Software Engineer)">
+            <textarea id="userExperience" class="manual-input" style="height: 80px;" placeholder="List your key skills, education, and past work experience..."></textarea>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <label><strong>Target Job Description:</strong></label><br>
+            <textarea id="jobDescInput" style="width: 100%; height: 120px; margin-top: 10px; border-radius: 10px; padding: 12px; border: 1px solid #ccc; font-size: 14px;" placeholder="Paste the Job Description from LinkedIn/Indeed here..."></textarea>
+        </div>
+
+        <button id="tailorResumeBtn" type="button" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; padding: 16px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; box-shadow: 0 4px 15px rgba(0,123,255,0.3);">🚀 Generate & Tailor Resume</button>
+        
+        <div style="margin-top: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <label><strong>3. AI Optimized Result:</strong></label>
                 <div id="actionButtons" style="display: none; gap: 10px;">
-                    <button id="downloadBtn" style="background: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">📥 Download</button>
-                    <button id="shareBtn" style="background: #0077b5; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">🔗 Share</button>
+                    <button id="downloadBtn" style="background: #28a745; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">📥 Download .txt</button>
+                    <button id="shareBtn" style="background: #0077b5; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold;">🔗 Share</button>
                 </div>
             </div>
-            <textarea id="optimizedResume" style="width: 100%; height: 180px; margin-top: 10px; border-radius: 8px; padding: 10px; border: 1px solid #ccc; background: #fdfdfd;" placeholder="AI optimized resume will appear here..." readonly></textarea>
+            <textarea id="optimizedResume" style="width: 100%; height: 250px; margin-top: 12px; border-radius: 12px; padding: 15px; border: 1px solid #ddd; background: #fafafa; font-family: 'Courier New', monospace; line-height: 1.6; font-size: 14px;" placeholder="Your professional future starts here..." readonly></textarea>
         </div>
 
-        <div id="systemLogs">> System initialized. Waiting for CTO input...</div>
+        <div id="systemLogs">> CTO Dashboard Online. System waiting for input...</div>
       </section>
 
       <section id="tab-interview" class="tab-content">
-        <h2>AI Mock Interview</h2>
-        <div id="interviewChat"><p><em>AI: Upload your CV and click "Start Interview" to begin...</em></p></div>
+        <h2>AI Technical Mock Interview</h2>
+        <div id="interviewChat"><p><em>AI: Enter your details or upload a CV to start a tailored interview session...</em></p></div>
         <div style="display: flex; gap: 10px;">
-            <input type="text" id="interviewInput" placeholder="Type your response..." style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
-            <button id="sendInterviewBtn" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Send</button>
+            <input type="text" id="interviewInput" placeholder="Type your response..." style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+            <button id="sendInterviewBtn" style="background: #28a745; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold;">Send</button>
         </div>
       </section>
 
       <section id="tab-apply" class="tab-content">
-        <h2>One-Click Apply Helper</h2>
-        <input type="text" id="jobSearch" placeholder="Role (e.g. Frontend Engineer)" style="width: 70%; padding: 10px; margin-bottom: 10px;">
-        <button id="searchJobsBtn" style="padding: 10px; background: #333; color: white; border-radius: 5px;">Search Jobs</button>
-        <div style="margin-top: 20px; padding: 20px; background: #eee; border-radius: 10px; text-align: center;">
-            <p>Job results will populate here.</p>
+        <h2>Lagos Job Market Finder</h2>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <input type="text" id="jobSearch" placeholder="Role (e.g. Backend Developer)" style="flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc;">
+            <button id="searchJobsBtn" style="padding: 12px 25px; background: #333; color: white; border-radius: 8px; font-weight: bold;">Search Jobs</button>
+        </div>
+        <div style="padding: 30px; background: #f0f2f5; border-radius: 12px; text-align: center; border: 2px dashed #ccc;">
+            <p style="color: #666;">Enter a role above to find active openings in Lagos.</p>
         </div>
       </section>
     </main>
@@ -100,10 +129,7 @@
       }
     });
 
-    // CRITICAL: We import and THEN run the init
-    import('./prae_logic.js').then((m) => {
-        console.log("🧠 PraeHire Logic Connected.");
-    });
+    import('./prae_logic.js').then((m) => { console.log("🧠 PraeHire Logic Connected."); });
   </script>
 </body>
 </html>
