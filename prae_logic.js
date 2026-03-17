@@ -1,12 +1,11 @@
 /**
- * PraeHire Core Brain v4.0 - CTO Jeremiah Adedurin Edition
- * Features: AI Tailoring, Mock Interviewer, & Auto-Apply Helper
+ * PraeHire Core Brain v4.0.2 - CTO Jeremiah Adedurin Edition
+ * Features: AI Tailoring (Stable v1), Mock Interviewer, & Auto-Apply Helper
  */
 
 console.log("🧠 PraeHire Brain: System Online.");
 
 let resumeFileContent = null;
-// --- CTO SECURITY NOTE: Ensure this key is restricted in Google Cloud Console ---
 const GEMINI_API_KEY = 'AIzaSyBNsc8VmB9PYXQ-vvSofkX9VcJBip_ecCc'; 
 
 // --- 1. PDF PROCESSING ENGINE ---
@@ -41,21 +40,22 @@ async function handleFileUpload(e) {
     reader.readAsArrayBuffer(file);
 }
 
+// --- 2. AI TAILORING (v1 Stable Endpoint) ---
 async function tailorResume() {
-    console.log("🖱️ Tailor Button Triggered.");
+    console.log("🚀 Tailor Button Triggered (v1 Stable).");
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const output = document.getElementById('optimizedResume');
     
-    // VALIDATION: Ensure we have enough "fuel" for the AI
     if (!resumeFileContent) return alert("Please upload a resume first!");
     if (!jobDesc || jobDesc.length < 50) {
-        return alert("The Job Description is too short! Please paste the full 'About the Job' section.");
+        return alert("The Job Description is too short! Please paste the full section.");
     }
 
     output.value = "⏳ Gemini 1.5 Flash is re-engineering your resume... please wait.";
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // FIXED: Using v1 stable endpoint which is more reliable for Flash
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -71,8 +71,6 @@ async function tailorResume() {
         });
 
         const data = await response.json();
-
-        // LOG THE DATA: This helps us see the error in the console
         console.log("🤖 AI Data Received:", data);
 
         if (data.candidates && data.candidates[0].content) {
@@ -101,7 +99,8 @@ async function sendInterviewAnswer() {
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        // FIXED: Updated Interviewer to v1 stable as well
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -109,8 +108,13 @@ async function sendInterviewAnswer() {
             })
         });
         const data = await response.json();
-        const aiMsg = data.candidates[0].content.parts[0].text;
-        chatBox.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
+        
+        if (data.candidates && data.candidates[0].content) {
+            const aiMsg = data.candidates[0].content.parts[0].text;
+            chatBox.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
+        } else {
+            chatBox.innerHTML += `<p style="color:red;">❌ AI could not generate a response.</p>`;
+        }
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (err) {
         console.error("❌ Interviewer Error:", err);
@@ -126,7 +130,6 @@ function init() {
     document.getElementById('sendInterviewBtn')?.addEventListener('click', sendInterviewAnswer);
 }
 
-// Global Execution
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
