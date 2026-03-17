@@ -91,15 +91,15 @@ async function sendInterviewAnswer() {
     input.value = "";
     addLog("💬 Sent answer to AI Interviewer...");
 
-    try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are a technical interviewer. CV: ${resumeFileContent}. User said: "${val}". Give feedback and ask next question.` }] }]
-            })
-        });
-
+  try {
+    // Structure change: v1beta + models/gemini-1.5-flash
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            contents: [{ parts: [{ text: `Professional Resume Re-engineer task. CV: ${resumeFileContent}. Job: ${jobDesc}` }] }]
+        })
+    });
         const data = await response.json();
         const aiMsg = data.candidates[0].content.parts[0].text;
         chat.innerHTML += `<p style="color:blue;"><strong>AI:</strong> ${aiMsg}</p>`;
