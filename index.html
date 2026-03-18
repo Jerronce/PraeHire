@@ -177,17 +177,17 @@
     </style>
 </head>
 <body>
-
-    <nav>
-        <div class="logo-container">
-            <img src="assets/logo.png" alt="PraeHire Logo">
-        </div>
-        <div class="nav-links">
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="login.html" class="btn-main" style="padding: 8px 20px; font-size: 14px;">Get Started</a>
-        </div>
-    </nav>
+<nav>
+    <div class="logo-container" style="display: flex; align-items: center; gap: 10px;">
+        <img src="assets/logo.png" alt="PraeHire Logo" style="height: 45px; filter: drop-shadow(0 0 8px var(--accent-glow));">
+        <span style="font-size: 22px; font-weight: 800; letter-spacing: -1px; color: #fff;">PraeHire</span>
+    </div>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="login.html" class="btn-main" style="padding: 10px 24px; font-size: 14px;">Get Started</a>
+    </div>
+</nav>
 
     <header class="hero">
         <h1>Your <span>Career Growth</span>,<br>Engineered by AI.</h1>
@@ -195,12 +195,14 @@
         <a href="login.html" class="btn-main">Start Applying Now — Free</a>
     </header>
 
-    <section class="video-wrapper">
-        <video width="100%" controls poster="assets/video-thumb.jpg">
-            <source src="assets/demo.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </section>
+  <section class="video-wrapper" style="position: relative; border: 1px solid rgba(59, 130, 246, 0.3); background: #000;">
+    <video width="100%" controls poster="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000" style="display: block; opacity: 0.9;">
+        <source src="assets/demo.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.2); pointer-events: none;"></div>
+</section>
 
     <section id="features" class="features">
         <div class="feature-card">
