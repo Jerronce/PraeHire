@@ -1,6 +1,7 @@
-/**/**
+/**
  * PraeHire Core Brain v7.0 - Global Architect Edition
  * Features: Multi-Agent Optimization (Resume, Letter, Roadmap, Scoring)
+ * Fully Restored Interviewer & Opportunity Finder Logic.
  */
 
 console.log("🧠 PraeHire Logic: v7.0 Active.");
@@ -16,6 +17,7 @@ function addLog(message) {
     }
 }
 
+// --- 1. PDF HANDLER ---
 window.handleFileUpload = async function(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -39,6 +41,7 @@ window.handleFileUpload = async function(e) {
     reader.readAsArrayBuffer(file);
 }
 
+// --- 2. CAREER RE-ENGINEERING ---
 window.tailorResume = async function() {
     const jobDesc = document.getElementById('jobDescInput')?.value;
     const resumeOut = document.getElementById('optimizedResume');
@@ -59,8 +62,8 @@ window.tailorResume = async function() {
     if (!GEMINI_API_KEY) return alert("Waiting for Cloud Secrets...");
     if (!jobDesc) return alert("Job Description missing!");
 
-    addLog("🚀 AI Engine: Architecting Career Package...");
-    resumeOut.value = "⏳ Re-engineering profile and generating roadmap...";
+    addLog("🚀 AI Engine: Re-engineering Career Package...");
+    resumeOut.value = "⏳ Processing profile and roadmap...";
     
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
@@ -68,17 +71,10 @@ window.tailorResume = async function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: `
-                    ROLE: Senior Global Recruiter & Career Strategist.
+                    ROLE: Top-Tier Global Career Coach.
                     INPUT: ${context}
                     TARGET: ${jobDesc}
-                    
-                    TASK:
-                    1. [SCORE]: A number (0-100) representing job match.
-                    2. [ROADMAP]: A 4-week learning plan for missing skills.
-                    3. [RESUME]: A full, ATS-optimized version of the resume.
-                    4. [LETTER]: A high-impact cover letter.
-                    
-                    FORMAT: Surround each section with the tags [SCORE], [ROADMAP], [RESUME], and [LETTER].` 
+                    TASK: Generate [SCORE], [ROADMAP], [RESUME], and [LETTER].` 
                 }] }]
             })
         });
@@ -87,7 +83,6 @@ window.tailorResume = async function() {
         if (data.candidates) {
             const raw = data.candidates[0].content.parts[0].text;
             
-            // --- PARSING LOGIC ---
             const scoreMatch = raw.match(/\[SCORE\]\s*(\d+)/);
             const roadmapMatch = raw.match(/\[ROADMAP\]([\s\S]*?)\[RESUME\]/);
             const resumeMatch = raw.match(/\[RESUME\]([\s\S]*?)\[LETTER\]/);
@@ -100,21 +95,56 @@ window.tailorResume = async function() {
                 scoreBar.style.width = `${s}%`;
                 addLog(`🎯 Optimization Strength: ${s}%`);
             }
-
             if (roadmapMatch) roadmapOut.innerText = roadmapMatch[1].trim();
             if (resumeMatch) resumeOut.value = resumeMatch[1].trim();
             if (letterMatch) letterOut.value = letterMatch[1].trim();
 
             document.getElementById('actionButtons').style.display = 'flex';
-            addLog("✅ Career Package v7.0 Ready.");
+            addLog("✅ Career Package Ready.");
         }
     } catch (err) { addLog("❌ Connection Error."); }
 }
 
+// --- 3. AI INTERVIEWER ---
+window.sendInterviewAnswer = async function() {
+    const input = document.getElementById('interviewInput');
+    const chat = document.getElementById('interviewChat');
+    const val = input.value;
+    if (!val) return;
+
+    chat.innerHTML += `<div class="user-bubble">${val}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    if (!GEMINI_API_KEY) return;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Senior Recruiter Interview. Candidate Profile: ${resumeFileContent || "Manual Entry"}. User Answer: "${val}". Give brief feedback and ask next technical question.` }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiMsg = data.candidates[0].content.parts[0].text;
+        chat.innerHTML += `<div class="ai-bubble"><strong>AI:</strong><br>${aiMsg}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    } catch (err) { addLog("❌ Interviewer failed."); }
+}
+
+// --- 4. OPPORTUNITY FINDER ---
+window.searchJobs = function() {
+    const query = document.getElementById('jobSearch').value;
+    if(!query) return alert("Enter role and location.");
+    addLog(`🔍 Searching Global Market for: ${query}...`);
+    window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}`, "_blank");
+}
+
 window.init = function() {
     document.getElementById('resumeFile')?.addEventListener('change', window.handleFileUpload);
-    document.getElementById('tailorResumeBtn').onclick = window.tailorResume;
-    // ... other buttons init same as before ...
+    addLog("✅ PraeHire Global v7.0 Online.");
 }
 
 window.init();

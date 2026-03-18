@@ -10,6 +10,7 @@
     /* GLOBAL THEME */
     body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; }
     h2, h3, strong { color: #ffffff !important; }
+    label { color: #cbd5e1 !important; display: block; margin-bottom: 8px; font-weight: 600; }
     
     .tab-nav { display: flex; gap: 10px; margin: 25px 0; border-bottom: 1px solid #334155; padding-bottom: 10px; }
     .tab-btn { padding: 12px 24px; cursor: pointer; border: none; background: #1e293b; color: #94a3b8; border-radius: 8px; font-weight: bold; transition: 0.3s; }
@@ -23,13 +24,18 @@
     .score-container { margin-top: 20px; display: none; background: #1e293b; padding: 25px; border-radius: 16px; border: 1px solid #3b82f6; }
     .progress-bg { background: #334155; height: 14px; border-radius: 10px; overflow: hidden; margin: 15px 0; }
     #progressBar { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 1s ease-in-out; }
-    #aiRoadmap { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 15px; border-radius: 12px; margin-top: 15px; color: #f1f5f9; font-size: 14px; line-height: 1.6; }
+    #aiRoadmap { background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 15px; border-radius: 12px; margin-top: 15px; color: #f1f5f9; font-size: 14px; line-height: 1.6; white-space: pre-wrap; }
 
     /* UI COMPONENTS */
     .upload-box { border: 2px dashed #3b82f6; padding: 30px; border-radius: 16px; text-align: center; background: rgba(30, 41, 59, 0.5); }
     .manual-input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; font-size: 14px; }
     .result-area { width: 100%; height: 400px; margin-top: 12px; border-radius: 16px; padding: 20px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; font-family: monospace; line-height: 1.7; font-size: 14px; display: none; }
     .result-area.active { display: block; }
+
+    /* INTERVIEWER CHAT */
+    #interviewChat { height: 350px; overflow-y: auto; border: 1px solid #334155; padding: 20px; background: #0f172a; border-radius: 16px; margin-bottom: 15px; }
+    .ai-bubble { background: #1e293b; padding: 15px; border-radius: 0 16px 16px 16px; max-width: 85%; border: 1px solid #334155; margin-bottom: 15px; color: #f8fafc; }
+    .user-bubble { background: #3b82f6; padding: 15px; border-radius: 16px 0 16px 16px; max-width: 85%; margin-left: auto; margin-bottom: 15px; color: white; }
 
     #systemLogs { margin-top: 20px; background: #000; color: #10b981; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 13px; height: 100px; overflow-y: auto; border-left: 4px solid #3b82f6; }
   </style>
@@ -50,7 +56,6 @@
 
       <section id="tab-resume" class="tab-content active">
         <h2>Career Re-Engineering</h2>
-        
         <div class="upload-box">
             <label for="resumeFile" style="cursor: pointer; color: #3b82f6; font-weight: 800;">📁 Upload CV (PDF)</label>
             <input type="file" id="resumeFile" accept=".pdf" style="display: none;">
@@ -58,6 +63,7 @@
         </div>
 
         <div class="manual-form" style="background: #1e293b; padding: 20px; border-radius: 16px; border: 1px solid #334155; margin-top: 15px;">
+            <p style="font-weight: 700; color: #cbd5e1;">Manual Profile Builder:</p>
             <input type="text" id="userName" class="manual-input" placeholder="Full Name">
             <input type="text" id="userTitle" class="manual-input" placeholder="Target Role">
             <textarea id="userExperience" class="manual-input" style="height: 100px;" placeholder="Paste bio or skills..."></textarea>
@@ -76,7 +82,6 @@
                 <span id="scoreText" style="color: #10b981; font-weight: 800;">0%</span>
             </div>
             <div class="progress-bg"><div id="progressBar"></div></div>
-            
             <div id="roadmapBox">
                 <strong style="color: #10b981; display: block; margin-top: 10px;">🗺️ 4-Week Skills Roadmap:</strong>
                 <div id="aiRoadmap">Analysis pending...</div>
@@ -90,20 +95,35 @@
             </nav>
             <textarea id="optimizedResume" class="result-area active" readonly></textarea>
             <textarea id="coverLetterText" class="result-area" readonly></textarea>
-            
             <div id="actionButtons" style="display: none; gap: 10px; margin-top: 10px; justify-content: flex-end;">
                 <button id="downloadBtn" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700;">Download .txt</button>
             </div>
         </div>
-
-        <div id="systemLogs">> PraeHire Global v7.0 Online.</div>
       </section>
 
       <section id="tab-interview" class="tab-content">
-          </section>
-      <section id="tab-apply" class="tab-content">
-          </section>
+        <h2>Global Mock Interviewer</h2>
+        <div id="interviewChat">
+            <div class="ai-bubble"><strong>AI Recruiter:</strong><br>Welcome to PraeHire Interviews. I've been trained on top-tier tech hiring standards. Type "Start" or answer my question based on your profile!</div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <input type="text" id="interviewInput" placeholder="Type your answer..." style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
+            <button id="sendInterviewBtn" onclick="sendInterviewAnswer()" style="background: #10b981; color: white; border: none; padding: 0 30px; border-radius: 12px; font-weight: 800; cursor: pointer;">Send</button>
+        </div>
+      </section>
 
+      <section id="tab-apply" class="tab-content">
+        <h2>Opportunity Finder</h2>
+        <div style="display: flex; gap: 12px; margin-bottom: 25px;">
+            <input type="text" id="jobSearch" placeholder="Role & City (e.g. AI Engineer in Lagos)" style="flex: 1; padding: 15px; border-radius: 12px; background: #1e293b; border: 1px solid #334155; color: white;">
+            <button id="searchJobsBtn" onclick="searchJobs()" style="padding: 0 30px; background: #3b82f6; color: white; border-radius: 12px; font-weight: 800;">Search</button>
+        </div>
+        <div style="padding: 40px; background: rgba(30, 41, 59, 0.5); border-radius: 20px; text-align: center; border: 2px dashed #334155;">
+            <p style="color: #cbd5e1;">Scan global LinkedIn and Indeed databases for your target role.</p>
+        </div>
+      </section>
+
+      <div id="systemLogs">> PraeHire Global Core Online.</div>
     </main>
   </div>
 
@@ -115,6 +135,7 @@
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
+        if(event) event.currentTarget.classList.add('active');
     };
 
     window.switchResult = function(id, btn) {
@@ -123,6 +144,10 @@
         btn.parentElement.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
     };
+
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        signOut(auth).then(() => window.location.href = 'login.html');
+    });
 
     onAuthStateChanged(auth, (user) => {
       if (!user) { window.location.href = 'login.html'; } 
