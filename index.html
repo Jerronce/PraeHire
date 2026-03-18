@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PraeHire | Your Global AI Career Architect</title>
+    <title>PraeHire | Global AI Career Suite</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="assets/logo.png">
@@ -26,7 +26,6 @@
             overflow-x: hidden;
         }
 
-        /* Navbar Styling */
         nav {
             display: flex;
             justify-content: space-between;
@@ -51,7 +50,6 @@
 
         .nav-links a:hover { color: #fff; }
 
-        /* Hero Section */
         .hero {
             padding: 100px 8% 60px;
             text-align: center;
@@ -76,7 +74,7 @@
         .hero p {
             color: #94a3b8;
             font-size: 18px;
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto 40px;
             line-height: 1.6;
         }
@@ -94,20 +92,19 @@
 
         .btn-main:hover { transform: scale(1.05); background: var(--accent); color: #fff; }
 
-        /* Video Section */
         .video-wrapper {
             max-width: 900px;
             margin: 60px auto;
             border-radius: 24px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: #000;
         }
 
-        /* Features Grid */
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
             padding: 80px 8%;
         }
@@ -129,55 +126,39 @@
         .feature-card h3 { color: #fff; margin-bottom: 12px; }
         .feature-card p { color: #94a3b8; line-height: 1.5; font-size: 15px; }
 
-        /* Pricing Section */
-        .pricing {
-            padding: 100px 8%;
-            text-align: center;
-        }
+        .pricing { padding: 100px 8%; text-align: center; }
 
         .pricing-card {
-            max-width: 400px;
+            max-width: 450px;
             margin: 0 auto;
-            background: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%);
             padding: 60px 40px;
             border-radius: 32px;
             border: 1px solid var(--accent);
             position: relative;
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.1);
         }
 
-        .price-tag { font-size: 48px; font-weight: 800; color: #fff; margin: 20px 0; }
-        .price-tag span { font-size: 18px; color: #94a3b8; }
+        .price-tag { font-size: 56px; font-weight: 800; color: #fff; margin: 20px 0; }
+        .price-tag span { font-size: 20px; color: #94a3b8; }
 
         ul { list-style: none; padding: 0; margin: 30px 0; text-align: left; }
-        li { margin-bottom: 12px; color: #cbd5e1; display: flex; align-items: center; gap: 10px; }
+        li { margin-bottom: 15px; color: #cbd5e1; display: flex; align-items: center; gap: 12px; font-size: 16px; }
         li::before { content: '✓'; color: #10b981; font-weight: bold; }
 
-        /* Footer */
         footer {
             padding: 60px 8%;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             background: rgba(0,0,0,0.3);
         }
 
-        .footer-grid {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 40px;
-        }
-
-        .footer-links a {
-            display: block;
-            color: #64748b;
-            text-decoration: none;
-            margin-bottom: 10px;
-            transition: 0.3s;
-        }
-
+        .footer-grid { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px; }
+        .footer-links a { display: block; color: #64748b; text-decoration: none; margin-bottom: 10px; transition: 0.3s; }
         .footer-links a:hover { color: #fff; }
     </style>
 </head>
 <body>
+
 <nav>
     <div class="logo-container" style="display: flex; align-items: center; gap: 10px;">
         <img src="assets/logo.png" alt="PraeHire Logo" style="height: 45px; filter: drop-shadow(0 0 8px var(--accent-glow));">
@@ -190,70 +171,75 @@
     </div>
 </nav>
 
-    <header class="hero">
-        <h1>Your <span>Career Growth</span>,<br>Engineered by AI.</h1>
-        <p>PraeHire automates the hardest parts of job hunting. Tailor resumes, practice technical interviews, and find global roles in one click.</p>
-        <a href="login.html" class="btn-main">Start Applying Now — Free</a>
-    </header>
+<header class="hero">
+    <h1>Your <span>Career Evolution</span>,<br>Architected by AI.</h1>
+    <p>The global job market is competitive. PraeHire gives you the edge with high-fidelity resume re-engineering, personalized skill roadmaps, and technical mock interviews.</p>
+    <a href="login.html" class="btn-main">Start Your Transformation</a>
+</header>
 
-  <section class="video-wrapper" style="position: relative; border: 1px solid rgba(59, 130, 246, 0.3); background: #000;">
-    <video width="100%" controls poster="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000" style="display: block; opacity: 0.9;">
+<section class="video-wrapper">
+    <video width="100%" controls poster="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000">
         <source src="assets/demo.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-    
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; box-shadow: inset 0 0 100px rgba(59, 130, 246, 0.2); pointer-events: none;"></div>
 </section>
 
-    <section id="features" class="features">
-        <div class="feature-card">
-            <h3>Resume Tailoring</h3>
-            <p>ATS-ready optimization using Gemini 1.5 Flash. Match the job description perfectly in seconds.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Mock Interviews</h3>
-            <p>Practice with an AI Recruiter that understands your CV and asks the tough technical questions.</p>
-        </div>
-        <div class="feature-card">
-            <h3>Global Finder</h3>
-            <p>Search opportunities from Lagos to London. Integrated job search to keep your pipeline full.</p>
-        </div>
-    </section>
+<section id="features" class="features">
+    <div class="feature-card">
+        <h3>AI Resume Re-Engineering</h3>
+        <p>Go beyond simple tailoring. Our engine reconstructs your CV for 100% ATS compatibility and maximum impact for global hiring managers.</p>
+    </div>
+    <div class="feature-card">
+        <h3>4-Week Skill Roadmap</h3>
+        <p>Get a visual match score and a step-by-step learning plan to bridge the gap between your current skills and your dream job.</p>
+    </div>
+    <div class="feature-card">
+        <h3>Mock Technical Interviews</h3>
+        <p>Rehearse with an AI that knows your career history. Practice tough technical questions and get instant feedback on your pitch.</p>
+    </div>
+    <div class="feature-card">
+        <h3>AI Cover Letter Suite</h3>
+        <p>Generate high-conversion, personalized cover letters in seconds. Every application deserves a world-class introduction.</p>
+    </div>
+</section>
 
-    <section id="pricing" class="pricing">
-        <div class="pricing-card">
-            <h3>The Pro Plan</h3>
-            <div class="price-tag">$100 <span>/month</span></div>
-            <ul>
-                <li>Unlimited AI Resume Tailoring</li>
-                <li>Professional Technical Interviews</li>
-                <li>Match Scoring & Gap Analysis</li>
-                <li>Priority Support & Tracking</li>
-            </ul>
-            <a href="login.html" class="btn-main" style="display: block; background: var(--accent); color: white;">Start Your Subscription</a>
-        </div>
-    </section>
+<section id="pricing" class="pricing">
+    <div class="pricing-card">
+        <div style="background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 12px; font-weight: 800; margin-bottom: 10px;">GLOBAL PRO ACCESS</div>
+        <h3>The Professional Suite</h3>
+        <div class="price-tag">$149 <span>/month</span></div>
+        <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">Complete career management for serious engineers.</p>
+        <ul>
+            <li>Unlimited Resume Re-Engineering</li>
+            <li>Instant Cover Letter Generation</li>
+            <li>Interactive AI Mock Interviews</li>
+            <li>Personalized 4-Week Skill Roadmaps</li>
+            <li>Visual Match Scoring & ATS Analysis</li>
+        </ul>
+        <a href="login.html" class="btn-main" style="display: block; background: var(--accent); color: white;">Unlock Global Opportunities</a>
+    </div>
+</section>
 
-    <footer>
-        <div class="footer-grid">
-            <div>
-                <img src="assets/logo.png" height="30" alt="PraeHire">
-                <p style="font-size: 13px; margin-top: 15px;">© 2026 Prae Technologies.<br>AI-Powered Job Application Assistant.</p>
-            </div>
-            <div class="footer-links">
-                <strong>Product</strong>
-                <a href="#features">Features</a>
-                <a href="#pricing">Pricing</a>
-            </header>
-            <div class="footer-links">
-                <strong>Company</strong>
-                <a href="about.html">About</a>
-                <a href="privacy.html">Privacy Policy</a>
-                <a href="terms.html">Terms of Service</a>
-                <a href="refund.html">Refund Policy</a>
-            </div>
+<footer>
+    <div class="footer-grid">
+        <div>
+            <img src="assets/logo.png" height="30" alt="PraeHire" style="filter: brightness(0) invert(1);">
+            <p style="font-size: 13px; margin-top: 15px; color: #64748b;">© 2026 Prae Technologies.<br>Built by Jeremiah Adedurin.</p>
         </div>
-    </footer>
+        <div class="footer-links">
+            <strong>Product</strong>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+        </div>
+        <div class="footer-links">
+            <strong>Company</strong>
+            <a href="about.html">About Founder</a>
+            <a href="privacy.html">Privacy Policy</a>
+            <a href="terms.html">Terms of Service</a>
+            <a href="refund.html">Refund Policy</a>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>
