@@ -29,7 +29,6 @@
       </div>
 
       <div class="google-signin-button">
-        <!-- Main Google sign-in button -->
         <button
           type="button"
           id="googleSignIn"
@@ -40,11 +39,10 @@
         </button>
       </div>
 
-      <div class="back-to-home">
-        <a href="index.html" class="btn-outline">Back to Home</a>
+      <div class="back-to-home" style="margin-top: 15px; text-align: center;">
+        <a href="index.html" class="btn-outline" style="text-decoration: none; color: #94a3b8; font-size: 14px;">← Back to Home</a>
       </div>
 
-      <!-- LOGIN FORM -->
       <form id="loginForm" class="auth-form">
         <div class="form-group">
           <label for="loginEmail">Email</label>
@@ -64,19 +62,17 @@
           <a href="#" class="forgot-link">Forgot password?</a>
         </div>
 
-        <!-- Login pay button now also triggers Google Sign-In -->
         <button
-          type="button"
+          type="submit"
           class="btn-primary btn-full btn-large"
-           onclick="window.location.href='payment-gate.html';"
+          style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);"
         >
-          🔒 Pay to unlock ($100/month)
+          🔒 Pay to unlock ($149/month)
         </button>
 
-        <div id="loginError" class="error-message"></div>
+        <div id="loginError" class="error-message" style="color: #ff4d4d; margin-top: 10px; font-size: 13px; text-align: center;"></div>
       </form>
 
-      <!-- SIGNUP FORM -->
       <form id="signupForm" class="auth-form" style="display: none;">
         <div class="form-group">
           <label for="signupName">Full Name</label>
@@ -98,16 +94,15 @@
           <input type="password" id="confirmPassword" placeholder="Confirm password" required>
         </div>
 
-        <!-- Signup pay button also triggers the same Google Sign-In -->
         <button
-          type="button"
+          type="submit"
           class="btn-primary btn-full btn-large"
-          onclick="window.location.href='payment-gate.html';"
+          style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);"
         >
-          🔒 Pay to unlock ($100/month)
+          🔒 Pay to unlock ($149/month)
         </button>
 
-        <div id="signupError" class="error-message"></div>
+        <div id="signupError" class="error-message" style="color: #ff4d4d; margin-top: 10px; font-size: 13px; text-align: center;"></div>
       </form>
     </div>
   </div>
@@ -118,6 +113,7 @@
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
 
+    // Toggle Tabs
     loginTab.addEventListener('click', function () {
       loginForm.style.display = 'block';
       signupForm.style.display = 'none';
@@ -131,8 +127,29 @@
       signupTab.classList.add('active');
       loginTab.classList.remove('active');
     });
+
+    // Handle Form Submissions (Redirect to Payment after validation)
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // Save email to local storage for Flutterwave to pick up
+        localStorage.setItem('userEmail', document.getElementById('loginEmail').value);
+        window.location.href = 'payment-gate.html';
+    });
+
+    signupForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const pass = document.getElementById('signupPassword').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        
+        if (pass !== confirm) {
+            document.getElementById('signupError').innerText = "Passwords do not match!";
+            return;
+        }
+        
+        localStorage.setItem('userEmail', document.getElementById('signupEmail').value);
+        window.location.href = 'payment-gate.html';
+    });
   </script>
-  <!-- Make sure js/auth.js defines window.handleGoogleSignIn -->
   <script type="module" src="js/auth.js"></script>
 </body>
 </html>
