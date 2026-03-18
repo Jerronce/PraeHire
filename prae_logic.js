@@ -1,7 +1,6 @@
 /**
- * PraeHire Core Brain v6.1 - Global Architect Edition
- * Features: Visual Score Bar, Global Job Search, Fixed Button Binding
- * Security: Uses GitHub Secrets
+ * PraeHire Core Brain v6.2 - Global Architect Edition
+ * Features: Visual Score Bar, Global Job Search, Secure API, Chat Bubbles
  */
 
 console.log("🧠 PraeHire Logic: Global Online.");
@@ -61,14 +60,11 @@ window.tailorResume = async function() {
         addLog("📝 Building from Career Profile...");
     }
 
-    if (!GEMINI_API_KEY) { 
-        addLog("⚠️ Key missing. Deploying via GitHub Actions..."); 
-        return alert("Environment starting. Try again in 60 seconds."); 
-    }
+    if (!GEMINI_API_KEY) { addLog("⚠️ Waiting for Secure Key..."); return; }
     if (!jobDesc) return alert("Paste a Job Description!");
 
-    addLog("🚀 AI Engine: Generating World-Class Resume...");
-    output.value = "⏳ Re-engineering career data for global standard...";
+    addLog("🚀 AI Engine: Re-engineering for Global Standard...");
+    output.value = "⏳ Optimizing career profile...";
     output.classList.add('loading-pulse');
 
     try {
@@ -77,15 +73,10 @@ window.tailorResume = async function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: `
-                    SYSTEM: Professional Global Recruiter.
+                    SYSTEM: Global Professional Recruiter.
                     CONTEXT: ${inputContext}
                     TARGET: ${jobDesc}
-                    
-                    RULES:
-                    1. Re-write the profile for 100% ATS compatibility.
-                    2. START with: [SCORE] NUMBER/100
-                    3. FOLLOW with: [ANALYSIS] One-sentence career gap analysis.
-                    4. THEN provide the full resume in clean Markdown.` 
+                    START with [SCORE] NUMBER/100 and [ANALYSIS] one sentence. THEN resume.` 
                 }] }]
             })
         });
@@ -97,7 +88,6 @@ window.tailorResume = async function() {
             const raw = data.candidates[0].content.parts[0].text;
             output.value = raw;
 
-            // --- VISUAL SCORE UPDATER ---
             const scoreMatch = raw.match(/\[SCORE\]\s*(\d+)/);
             const analysisMatch = raw.match(/\[ANALYSIS\](.*)/);
             
@@ -109,28 +99,50 @@ window.tailorResume = async function() {
                 analysisText.innerText = analysisMatch ? analysisMatch[1].trim() : "";
                 addLog(`🎯 Optimization Level: ${score}%`);
             }
-            
             document.getElementById('actionButtons').style.display = 'flex';
         }
-    } catch (err) {
-        addLog("❌ Connection Error.");
-        output.classList.remove('loading-pulse');
-    }
+    } catch (err) { addLog("❌ Connection Error."); }
 }
 
-// --- 3. GLOBAL JOB SEARCH (Global) ---
+// --- 3. AI INTERVIEWER (Global) ---
+window.sendInterviewAnswer = async function() {
+    const input = document.getElementById('interviewInput');
+    const chat = document.getElementById('interviewChat');
+    const val = input.value;
+    if (!val) return;
+
+    chat.innerHTML += `<div class="user-bubble">${val}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+
+    if (!GEMINI_API_KEY) return addLog("⚠️ Key missing.");
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: `Recruiter Interview. CV: ${resumeFileContent || "None"}. User: "${val}". Give brief feedback and ask next question.` }] }]
+            })
+        });
+
+        const data = await response.json();
+        const aiMsg = data.candidates[0].content.parts[0].text;
+        chat.innerHTML += `<div class="ai-bubble"><strong>AI:</strong><br>${aiMsg}</div>`;
+        chat.scrollTop = chat.scrollHeight;
+    } catch (err) { addLog("❌ Interviewer failed."); }
+}
+
+// --- 4. GLOBAL JOB SEARCH (Global) ---
 window.searchJobs = function() {
     const query = document.getElementById('jobSearch').value;
-    if(!query) return alert("Enter role and location (e.g. Developer in NYC)");
+    if(!query) return alert("Enter role and location.");
     addLog(`🔍 Searching Global Market: ${query}...`);
     window.open(`https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}`, "_blank");
 }
 
-// --- 4. INITIALIZATION ---
+// --- 5. INITIALIZATION ---
 window.init = function() {
-    console.log("🤝 Establishing UI/Logic Handshake...");
-    
-    // Binding listeners manually to ensure they work in Module scope
     document.getElementById('resumeFile')?.addEventListener('change', window.handleFileUpload);
     
     const tailorBtn = document.getElementById('tailorResumeBtn');
@@ -138,6 +150,9 @@ window.init = function() {
 
     const searchBtn = document.getElementById('searchJobsBtn');
     if (searchBtn) searchBtn.onclick = window.searchJobs;
+
+    const interviewBtn = document.getElementById('sendInterviewBtn');
+    if (interviewBtn) interviewBtn.onclick = window.sendInterviewAnswer;
 
     document.getElementById('downloadBtn')?.addEventListener('click', () => {
         const text = document.getElementById('optimizedResume').value;
@@ -147,11 +162,6 @@ window.init = function() {
         link.download = "PraeHire_Resume.txt";
         link.click();
     });
-
-    document.getElementById('shareBtn')?.addEventListener('click', () => window.open("https://linkedin.com", "_blank"));
-    
-    addLog("✅ System Handshake Complete. Buttons Active.");
 }
 
-// Trigger init
 window.init();
