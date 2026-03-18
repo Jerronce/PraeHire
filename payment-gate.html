@@ -3,111 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscribe to PraeHire | Professional Tier</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>Secure Checkout | PraeHire Global</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #030712;
+            --accent: #3b82f6;
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
         body {
-            background-color: #030712;
-            background-image: radial-gradient(circle at top, rgba(59, 130, 246, 0.1), transparent);
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, rgba(59, 130, 246, 0.1), transparent),
+                              radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05), transparent);
             color: #f8fafc;
             font-family: 'Inter', sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
         }
-        .payment-gate {
-            background: rgba(255, 255, 255, 0.03);
+
+        .checkout-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 24px;
-            max-width: 450px;
-            width: 90%;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 420px;
             text-align: center;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
-        h1 { font-weight: 800; margin-bottom: 10px; background: linear-gradient(90deg, #3b82f6, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .pricing-box { margin: 30px 0; padding: 20px; border-radius: 16px; background: rgba(59, 130, 246, 0.05); border: 1px solid #3b82f6; }
-        h2 { font-size: 32px; margin: 10px 0; }
-        ul { text-align: left; list-style: none; padding: 0; margin: 20px 0; }
-        li { margin-bottom: 12px; font-size: 15px; color: #cbd5e1; }
-        .subscribe-btn {
+
+        .logo-box { margin-bottom: 25px; }
+        .logo-box img { height: 50px; filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.5)); }
+
+        h1 { font-size: 28px; font-weight: 800; margin-bottom: 10px; }
+        p { color: #94a3b8; font-size: 15px; margin-bottom: 30px; }
+
+        .price-box {
+            background: rgba(59, 130, 246, 0.07);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .amount { font-size: 48px; font-weight: 800; color: #fff; }
+        .currency { font-size: 18px; color: #94a3b8; }
+
+        .features-list {
+            text-align: left;
+            margin: 20px 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .features-list li {
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list li::before { content: "✦"; color: var(--accent); font-weight: bold; }
+
+        .pay-btn {
             background: #fff;
             color: #000;
             width: 100%;
-            padding: 16px;
+            padding: 18px;
             border: none;
-            border-radius: 12px;
-            font-weight: 700;
+            border-radius: 14px;
+            font-weight: 800;
             font-size: 16px;
             cursor: pointer;
             transition: 0.3s;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
         }
-        .subscribe-btn:hover { background: #3b82f6; color: #fff; transform: translateY(-2px); }
+
+        .pay-btn:hover {
+            transform: translateY(-3px);
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .footer-note { margin-top: 20px; font-size: 12px; color: #64748b; }
+        a { color: var(--accent); text-decoration: none; }
     </style>
 </head>
 <body>
-    <div class="payment-gate">
-        <h1>🚀 Unlock Your Career</h1>
-        <p style="color: #94a3b8;">Join the elite tier of global applicants.</p>
-        
-        <div class="pricing-box">
-            <h2>$149.00 <span style="font-size: 16px; color: #94a3b8;">/ Month</span></h2>
-            <ul>
-                <li>✅ AI Resume Re-Engineering</li>
-                <li>✅ 4-Week Personal Skill Roadmap</li>
-                <li>✅ AI Cover Letter Generation</li>
-                <li>✅ Interactive AI Technical Interviews</li>
-                <li>✅ Global Opportunity Finder</li>
-            </ul>
-            <button onclick="initiatePaymentThenSignup()" class="subscribe-btn">
-                Secure Professional Access
-            </button>
+
+    <div class="checkout-card">
+        <div class="logo-box">
+            <img src="assets/logo.png" alt="PraeHire">
         </div>
+        <h1>Complete Purchase</h1>
+        <p>Subscribe to the Professional Career Suite.</p>
+
+        <div class="price-box">
+            <div class="amount">$149.00</div>
+            <div class="currency">per month / USD</div>
+            
+            <ul class="features-list">
+                <li>AI Resume Re-Engineering</li>
+                <li>4-Week Skill Roadmap</li>
+                <li>Mock Technical Interviews</li>
+                <li>Cover Letter Suite</li>
+            </ul>
+        </div>
+
+        <button onclick="makePayment()" class="pay-btn">Activate My Account</button>
         
-        <p><a href="login.html" style="color: #3b82f6; text-decoration: none; font-weight: 600;">Already have an account? Login</a></p>
+        <div class="footer-note">
+            Secure payment powered by <strong>Flutterwave</strong>.<br>
+            <a href="login.html">Return to Login</a>
+        </div>
     </div>
 
     <script src="https://checkout.flutterwave.com/v3.js"></script>
     <script>
-        // CTO NOTE: Using the Professional v7.0 Price point
-        const FLUTTERWAVE_PUBLIC_KEY = 'FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X';
-        const MONTHLY_PRICE = 149; 
-        
-        function initiatePaymentThenSignup() {
-            // Get the email from the login page memory if available
-            const savedEmail = localStorage.getItem('userEmail');
-            const email = savedEmail || prompt('Enter your email address to secure your payment:');
-            
-            if (!email) return;
-            
-            FlutterwaveCheckout({
-                public_key: FLUTTERWAVE_PUBLIC_KEY,
-                tx_ref: 'praehire-v7-' + Date.now(),
-                amount: MONTHLY_PRICE,
-                currency: 'USD',
-                payment_options: 'card, banktransfer, ussd',
-                customer: {
-                    email: email,
-                    name: 'PraeHire Professional User',
-                },
-                customizations: {
-                    title: 'PraeHire Global Professional',
-                    description: 'Full Career Evolution Suite Access',
-                    logo: 'https://praehire.web.app/assets/logo.png',
-                },
-                callback: function(data) {
-                    if (data.status === 'successful') {
-                        localStorage.setItem('paymentStatus', 'paid');
-                        localStorage.setItem('userEmail', email);
-                        addLog("✅ Payment verified. Redirecting to Dashboard...");
-                        window.location.href = 'dashboard.html';
-                    }
-                },
-            });
-        }
+      function makePayment() {
+        // Retrieve email from login/signup memory
+        const userEmail = localStorage.getItem('userEmail') || "guest@praehire.com";
+
+        FlutterwaveCheckout({
+          public_key: "FLWPUBK-16a72bd54f4eb876e6a705d899b049d8-X", // Corrected key
+          tx_ref: "praehire-" + Date.now(),
+          amount: 149, // Updated to Professional Price
+          currency: "USD",
+          payment_options: "card, banktransfer, ussd",
+          customer: {
+            email: userEmail,
+            name: "PraeHire Professional User",
+          },
+          callback: function (data) {
+            if (data.status === "successful") {
+                localStorage.setItem('paymentVerified', 'true');
+                window.location.href = "dashboard.html";
+            }
+          },
+          customizations: {
+            title: "PraeHire Professional",
+            description: "Full AI Career Architect Access",
+            logo: "https://praehire.web.app/assets/logo.png",
+          },
+        });
+      }
     </script>
 </body>
 </html>
